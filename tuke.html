@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            background-color: black;
+            color: white;
+        }
+
+        #jaratok,
+        #buszmegalloReszek,
+        #buszmegalloindulobuszok {
+            width: 175px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #jaratIranyok {
+            width: 150px;
+            height: fit-content;
+            display: grid;
+        }
+
+        #choices {
+            display: flex;
+            gap: 50px;
+        }
+
+        #outputDiv {
+            width: 400px;
+            word-wrap: break-word;
+        }
+
+        #buszmegallok {
+            height: 50px;
+        }
+
+        #indulasokTablazat {
+            width: 500px;
+            height: fit-content;
+            border: 1px solid white;
+            color: white;
+            border-collapse: collapse;
+            text-align: center;
+            position: absolute;
+            transform: translateX(150%);
+        }
+
+        tr,
+        td,
+        th {
+            border: 1px solid white;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="choices">
+        <div id="jaratok"></div>
+        <div id="jaratIranyok"></div>
+        <select id="buszmegallok"></select>
+        <div id="buszmegalloReszek"></div>
+        <div id="buszmegalloindulobuszok"></div>
+    </div>
+    <div id="outputDiv"></div>
+
+    <script>
+        const jaratokDiv = document.getElementById("jaratok");
+        const jaratIranyokDiv = document.getElementById("jaratIranyok");
+        const outputDiv = document.getElementById("outputDiv");
+        const buszmegAllokSelect = document.getElementById("buszmegallok");
+        const buszmegalloReszekDiv = document.getElementById("buszmegalloReszek");
+        const buszmegalloindulobuszokDiv = document.getElementById("buszmegalloindulobuszok");
+
+        const jaratSzamok = [
+            "1", "2", "2A", "3", "3E", "4", "4Y", "6", "7", "7Y", "8", "12", "13E", "13", "13Y", "14", "14Y", "15", "16", "20",
+            "21", "21A", "22", "23", "23Y", "24", "25A", "25", "26", "27Y", "27", "28", "28A", "28Y", "29", "30", "30Y", "32",
+            "32Y", "33", "34", "34Y", "35", "35Y", "36", "37", "38", "38Y", "39", "40", "41", "41Y", "41E", "42", "42Y", "43",
+            "46", "47", "51", "52", "55", "60", "60A", "60Y", "61", "62", "73", "73Y", "82", "102", "102Y", "103", "104", "104E",
+            "104A", "109E", "121", "140", "142", "913", "926", "932", "940", "941", "973"
+        ];
+
+        const iranyok = [
+            "Uránváros-Uránváros",
+            ["Uránváros-Mecsekszabolcs", "Mecsekszabolcs-Uránváros"],
+            ["Uránváros-Fehérhegy", "Fehérhegy-Uránváros"],
+            "Kertváros-Kertváros",
+            "Kertváros-Főpályaudvar",
+            ["Uránváros-Hősök tere forduló", "Hősök tere forduló-Uránváros"],
+            ["Uránváros-Újhegy", "Újhegy-Uránváros"],
+            ["Kertváros-Árkád-Kertváros", "Ipar utca-Kertváros"],
+            ["Főpályaudvar-Malomvölgyi út", "Malomvölgyi út-Főpályaudvar"],
+            ["Főpályaudvar-Malomvölgyi út", "Malomvölgyi út-Főpályaudvar"],
+            ["Fagyöngy utca-Ipar utca", "Ipar utca-Fagyöngy utca"],
+            ["Budai Állomás-István akna", "István akna-Budai Állomás"],
+            ["Főpályaudvar-Hird, Harangláb utca", "Hird, Harangláb utca-Főpályaudvar"],
+            ["Főpályaudvar-Hird, Harangláb utca", "Hird, Harangláb utca-Főpályaudvar"],
+            ["Főpályaudvar-Hird, Harangláb utca", "Hird, Harangláb utca-Főpályaudvar"],
+            ["Főpályaudvar-Petőfi akna", "Petőfi akna-Főpályaudvar"],
+            ["Főpályaudvar-Petőfi akna", "Petőfi akna-Főpályaudvar"],
+            ["Főpályaudvar-István akna", "István akna-Főpályaudvar"],
+            ["Budai Állomás-Finn utca", "Finn utca-Budai Állomás"],
+            ["Főpályaudvar-Hőerőmű", "Hűerőmű-Főpályaudvar"],
+            ["Uránváros-Baromfifeldolgozó", "Baromfifeldolgozó-Uránváros"],
+            ["Uránváros-Hőerőmű", "Hőerőmű-Uránváros"],
+            ["Fagyöngy utca-Nagydeindol", "Nagydeindol-Fagyöngy utca"],
+            ["Fagyöngy utca-Deindol", "Deindol-Fagyöngy utca"],
+            ["Fagyöngy utca-Deindol", "Deindol-Fagyöngy utca"],
+            ["Fagyöngy utca-Mecsekszentkút", "Mecsekszentkút-Fagyöngy utca"],
+            ["Uránváros-Tettye Forrásház", "Tettye Forrásház-Uránváros"],
+            "Benczúr Gyula utca-Budai Állomás",
+            ["Budai Állomás-IIes rakodó", "IIes rakodó-Budai Állomás"],
+            ["Gesztenyés-IIes rakodó", "IIes rakodó-Gesztenyés"],
+            ["Gesztenyés-Benczúr Gyula utca", "Benczúr Gyula utca-Gesztenyés"],
+            ["Lámpásvölgy-IIes rakodó", "IIes rakodó-Lámpásvölgy"],
+            "Lámpásvölgy-Uránváros",
+            ["Lámpásvölgy-Uránváros", "Uránváros-Lámpásvölgy"],
+            "IIes rakodó-Gyükés",
+            ["Főpályaudvar-Klinikák", "Klinikák-Főpályaudvar"],
+            ["Kertváros-Klinikák", "Klinikák-Kertváros"],
+            "Főpályaudvar-MTA székház-Főpályaudvar",
+            ["Főpályaudvar-Tettye, Havihegyi út", "Tettye, Havihegyi út-Főpályaudvar"],
+            ["Főpályaudvar-Tettye, Havihegyi út", "Tettye, Havihegyi út-Főpályaudvar"],
+            ["Főpályaudvar-Dömörkapu", "Dömörkapu-Főpályaudvar"],
+            ["Főpályaudvar-Dömörkapu", "Dömörkapu-Főpályaudvar"],
+            ["Főpályaudvar-Misinatető", "Misinatető-Főpályaudvar"],
+            ["Főpályaudvar-Misinatető", "Misinatető-Főpályaudvar"],
+            ["Főpályaudvar-Bálicstető", "Bálicstető-Főpályaudvar"],
+            ["Főpályaudvar-Donátus", "Donátus-Főpályaudvar"],
+            ["Főpályaudvar-Lámpásvölgy", "Lámpásvölgy-Főpályaudvar"],
+            ["Főpályaudvar-Lámpásvölgy", "Lámpásvölgy-Főpályaudvar"],
+            ["Főpályaudvar-Gyükés", "Gyükés-Főpályaudvar"],
+            ["Főpályaudvar-Gesztenyés", "Gesztenyés-Főpályaudvar"],
+            ["Főpályaudvar-Rovitex", "Rovitex-Főpályaudvar"],
+            ["Főpályaudvar-Rovitex", "Rovitex-Főpályaudvar"],
+            "Rovitex-Főpályaudvar",
+            ["Főpályaudvar-Nagyárpád", "Nagyárpád-Főpályaudvar"],
+            "Főpályaudvar-Főpályaudvar",
+            ["Főpályaudvar-Rovitex", "Rovitex-Főpályaudvar"],
+            "Főpályaudvar-Főpályaudvar",
+            "Főpályaudvar-Főpályaudvar",
+            "Fagyöngy utca-Fagyöngy utca",
+            ["Fagyöngy utca-Időjós út", "Időjós út-Fagyöngy utca"],
+            "Klinikák-Klinikák",
+            ["Budai Állomás-Mecsekszabolcs", "Mecsekszabolcs-Budai Állomás"],
+            "Budai Állomás-Budai Állomás",
+            ["Budai Állomás-Újhegy", "Újhegy-Budai Állomás"],
+            ["Kertváros-Malomvölgyi út", "Malomvölgyi út-Kertváros"],
+            ["Kertváros-Fagyöngy utca", "Fagyöngy utca-Kertváros"],
+            ["Főpályaudvar-Malomvölgyi út", "Malomvölgyi út-Főpályaudvar"],
+            ["Főpályaudvar-Malomvölgyi út", "Malomvölgyi út-Főpályaudvar"],
+            "István akna-Petőfi akna",
+            ["Uránváros-Petőfi akna", "Petőfi akna-Uránváros"],
+            ["Uránváros-Petőfi akna", "Petőfi akna-Uránváros"],
+            ["Kertváros-Klinikák", "Klinikák-Kertváros"],
+            ["Uránváros-István akna", "István akna-Uránváros"],
+            ["Uránváros-Hird, Harangláb utca", "Hird, Harangláb utca-Uránváros"],
+            ["Uránváros-Hird, Harangláb utca", "Hird, Harangláb utca-Uránváros"],
+            "Fagyöngy utca-Klinikák",
+            ["Uránváros-Kertváros", "Kertváros-Uránváros"],
+            ["Főpályaudvar-Gesztenyés", "Gesztenyés-Főpályaudvar"],
+            ["Nagyárpád-Fagyöngy utca", "Fagyöngy utca-Nagyárpád"],
+            ["Főpályaudvar-Budai Állomás", "Budai Állomás-Főpályaudvar"],
+            "Uránváros-Deindol-Uránváros",
+            "Főpályaudvar-Donátus-Főpályaudvar",
+            ["Főpályaudvar-Kórház", "Kórház-Főpályaudvar"],
+            "Hőtávvezeték-Malomvölgyi út",
+            ["Főpályaudvar-Malomvölgyi út", "Malomvölgyi út-Főpályaudvar"]
+        ];
+
+        const hetkoznapiIndulasiIdok = [
+            ["04:37", "04:57", "05:17", "05:32", "05:47", "06:02", "06:12", "06:22", "06:32", "06:40", "06:50", "07:00", "07:10", "07:20", "07:30", "07:42", "07:57", "08:12", "08:42", "09:12", "09:42", "10:12", "10:42", "11:12", "11:42", "12:12", "12:32", "12:52", "13:12", "13:27", "13:42", "13:57", "14:12", "14:27", "14:42", "14:57", "15:12", "15:27", "15:42", "15:57", "16:12", "16:27", "16:42", "16:57", "17:12", "17:32", "17:52", "18:12", "18:42", "19:12", "19:42", "20:17", "20:47", "21:17", "21:47", "22:17", "22:50"],
+            [["00:00", "03:00", "03:30", "04:30", "04:45", "05:07", "05:27", "05:47", "06:07", "06:25", "06:42", "07:00", "07:08", "07:16", "07:40", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:20", "12:40", "13:00", "13:20", "13:40", "14:00", "14:20", "14:40", "15:00", "15:20", "15:40", "16:00", "16:20", "16:40", "17:00", "17:20", "17:40", "18:00", "18:25", "18:45", "19:25", "19:45", "20:30", "21:00", "21:30", "22:10", "22:27", "23:00", "23:30"], ["00:00", "03:34", "04:04", "04:49", "05:05", "05:25", "05:45", "06:05", "06:27", "06:47", "07:07", "07:27", "07:38", "07:48", "08:00", "08:20", "08:45", "09:15", "09:45", "10:15", "10:45", "11:15", "11:45", "12:12", "12:42", "13:02", "13:22", "13:42", "14:02", "14:22", "14:42", "15:02", "15:22", "15:42", "16:02", "16:22", "16:42", "17:02", "17:22", "17:42", "18:00", "18:18", "18:38", "19:10", "19:30", "20:03", "20:23", "21:03", "21:33", "22:05", "22:43", "23:00", "23:30"]]
+        ];
+
+        const hetvegiIndulasiIdok = [
+            ["04:55", "05:35", "06:10", "06:40", "07:10", "07:40", "08:10", "08:40", "09:10", "09:40", "10:10", "10:40", "11:10", "11:40", "12:10", "12:40", "13:10", "13:40", "14:10", "14:40", "15:10", "15:40", "16:10", "16:40", "17:10", "17:40", "18:10", "18:40", "19:10", "19:40", "20:17", "20:47", "21:17", "21:47", "22:17", "22:50",],
+            [["00:00", "01:30", "03:00", "03:30", "04:30", "05:10", "05:40", "06:15", "06:45", "07:25", "07:45", "08:25", "08:45", "09:25", "09:45", "10:25", "10:45", "11:25", "11:45", "12:25", "12:45", "13:25", "13:45", "14:25", "14:45", "15:25", "15:45", "16:25", "16:45", "17:25", "17:45", "18:25", "18:45", "19:25", "19:45", "20:30", "21:00", "21:30", "22:10", "22:27", "23:00", "23:30"], ["00:00", "02:00", "03:34", "04:04", "04:49", "05:03", "05:43", "06:23", "07:00", "07:30", "08:10", "08:30", "09:10", "09:30", "10:10", "10:30", "11:10", "11:30", "12:10", "12:30", "13:10", "13:30", "14:10", "14:30", "15:10", "15:30", "16:10", "16:30", "17:10", "17:30", "18:10", "18:30", "19:10", "19:30", "20:03", "20:23", "21:03", "21:33", "22:05", "22:45", "23:00", "23:30"]]
+        ];
+
+        const vasarnapiIndulasiIdok = [
+            ["04:55", "05:35", "06:10", "06:40", "07:10", "07:30", "07:50", "08:10", "08:30", "08:50", "09:10", "09:25", "09:40", "09:55", "10:10", "10:25", "10:40", "10:55", "11:10", "11:25", "11:40", "11:55", "12:10", "12:25", "12:40", "12:55", "13:10", "13:40", "14:10", "14:40", "15:10", "15:40", "16:10", "16:40", "17:10", "17:40", "18:10", "18:40", "19:10", "19:40", "20:17", "20:47", "21:17", "21:47", "22:17", "22:50",],
+            "same",
+        ];
+
+
+
+        let currentDate = new Date();
+        let currentDay = currentDate.getDay();
+
+        /*
+        hetfo - 1
+        kedd - 2
+        szerda - 3
+        csutortok - 4
+        pentek - 5
+        szombat - 6
+        vasarnap - 0
+        */
+
+        function checkDayType(today) {
+            switch (today) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    return "weekday";
+                    break;
+                case 0:
+                case 6:
+                    return "weekend";
+                    break;
+                default:
+                    return "none";
+            }
+        }
+        jaratSzamok.forEach(jarat => {
+            let newBtn = document.createElement("button");
+            newBtn.textContent = jarat;
+            newBtn.addEventListener("click", function (e) {
+                outputDiv.innerHTML = ``;
+                let chosenBus = e.target.textContent;
+                let kereses = jaratSzamok.includes(chosenBus);
+                if (kereses) {
+                    //console.log("Választott busz: " + chosenBus);
+                    outputDiv.innerHTML += `<h1>Választott busz: ${chosenBus}</h1>`
+                    let index = jaratSzamok.indexOf(chosenBus); //  bus's index
+                    let jaratIranyok = iranyok[index] // bus's route(s)
+                    let valasztottIranySzam, valasztottIranySzoveg;
+                    if (Array.isArray(jaratIranyok)) {
+                        jaratIranyokDiv.innerHTML = ``;
+                        for (let i = 0; i < jaratIranyok.length; i++) {
+                            let newIranyBtn = document.createElement("button");
+                            newIranyBtn.textContent = jaratIranyok[i];
+                            jaratIranyokDiv.appendChild(newIranyBtn);
+                            (function (jindex) {
+                                newIranyBtn.addEventListener("click", function (e) {
+                                    //currentDate = new Date();
+                                    //currentDay = currentDate.getDay();
+                                    outputDiv.innerHTML = `<h1>Választott busz: ${chosenBus}</h1>`;
+                                    valasztottIranySzam = jindex;
+                                    valasztottIranySzoveg = jaratIranyok[valasztottIranySzam];
+                                    outputDiv.innerHTML += `<h1>Irány: ${valasztottIranySzoveg}</h1>`
+                                    showRoutes(index, jaratIranyok, valasztottIranySzoveg, valasztottIranySzam);
+                                });
+                            })(i);
+                        }
+                    }
+                    else {
+                        jaratIranyokDiv.innerHTML = ``;
+                        let newIranyBtn = document.createElement("button");
+                        newIranyBtn.textContent = jaratIranyok;
+                        jaratIranyokDiv.appendChild(newIranyBtn);
+                        valasztottIranySzoveg = jaratIranyok;
+                        showRoutes(index, jaratIranyok, valasztottIranySzoveg, 0);
+                    }
+                }
+                else {
+                    console.error("A kiválasztott busz nem elérhető");
+                }
+            });
+            jaratokDiv.appendChild(newBtn);
+        });
+
+        function showRoutes(index, jaratIranyok, valasztottIranySzoveg, valasztottIranySzam) {
+            let elvalasztoIndex = valasztottIranySzoveg.indexOf("-");
+            let honnan = valasztottIranySzoveg.slice(0, elvalasztoIndex); // from where
+            let hova = valasztottIranySzoveg.slice(elvalasztoIndex + 1, valasztottIranySzoveg.length); // to where
+            if (valasztottIranySzam === 0 || valasztottIranySzam === 1) {
+                //console.log("Honnan: " + honnan + "\nHova: " + hova);
+                outputDiv.innerHTML += `<h3>Honnan: ${honnan}</h3><h3>Hova: ${hova}</h3>`;
+                if (currentDay < 6 && currentDay > 0) {
+                    if (!(Array.isArray(hetkoznapiIndulasiIdok[index][1]))) { // if only 1 route is available
+                        //console.log("Hétköznapi induló járatok: " + hetkoznapiIndulasiIdok[index]);
+                        outputDiv.innerHTML += `<h4>Hétköznap induló járatok:</h4><p>${hetkoznapiIndulasiIdok[index]}</p>`;
+                    }
+                    else { // if 2 routes are available
+                        //console.log("Hétköznapi induló járatok: " + hetkoznapiIndulasiIdok[index][valasztottIranySzam]);
+                        outputDiv.innerHTML += `<h4>Hétköznap induló járatok:</h4><p>${hetkoznapiIndulasiIdok[index][valasztottIranySzam]}</p>`;
+                    }
+                }
+                else if (currentDay === 0) {
+                    if (vasarnapiIndulasiIdok[index] === "same") { // if sunday's routes are the same
+                        if (!(Array.isArray(hetvegiIndulasiIdok[index][1]))) { // if only 1 route is available
+                            //console.log("Vasárnapi indulási idők: " + hetvegiIndulasiIdok[index]);
+                            outputDiv.innerHTML += `<h4>Vasárnap induló járatok:</h4><p>${hetvegiIndulasiIdok[index]}</p>`;
+                        }
+                        else {
+                            outputDiv.innerHTML += `<h4>Vasárnap induló járatok:</h4><p>${hetvegiIndulasiIdok[index][valasztottIranySzam]}</p>`
+                        }
+                    }
+                    else { // if sunday's routes are different from saturday's
+                        if (!(Array.isArray(hetvegiIndulasiIdok[index][1]))) {
+                            outputDiv.innerHTML += `<h4>Vasárnap induló járatok:</h4><p>${vasarnapiIndulasiIdok[index]}</p>`;
+                        }
+                        else {
+                            //console.log("Vasárnapi indulási idők: " + vasarnapiIndulasiIdok[index]);
+                            outputDiv.innerHTML += `<h4>Vasárnap induló járatok:</h4><p>${vasarnapiIndulasiIdok[index][valasztottIranySzam]}</p>`;
+                        }
+                    }
+                }
+                else {
+                    if (!(Array.isArray(hetvegiIndulasiIdok[index][1]))) { // if only 1 route is available
+                        //console.log("Hétvégi induló járatok: " + hetvegiIndulasiIdok[index]);
+                        outputDiv.innerHTML += `<h4>Hétvégi induló járatok:</h4><p>${hetvegiIndulasiIdok[index]}</p>`;
+                    }
+                    else { // if 2 routes are available
+                        //console.log("Hétvégi induló járatok: " + hetvegiIndulasiIdok[index][valasztottIranySzam]);
+                        outputDiv.innerHTML += `<h4>Hétvégi induló járatok:</h4><p>${hetvegiIndulasiIdok[index]}</p>`;
+                    }
+                }
+            }
+            else {
+                //console.error("Érvénytelen irányszám!");
+                outputDiv.innerHTML += `<h3 style="color: red;">Érvénytelen irányszám!</h3>`;
+            }
+        }
+
+        let buszmegAllok = {
+            "Zsolnay-szobor": ["Szabadság utca; Belváros felé", "Rákóczi út; Uránváros felé", "Szabadság utca; Főpályaudvar felé", "Rákóczi út; Budai Állomás és Kertváros"],
+            "Uránváros": ["1-es kocsiállás", "2-es kocsiállás", "3-as kocsiállás", "4-es kocsiállás", "6-os kocsiállás", "7-es kocsiállás", "8-as kocsiállás"],
+            "Olympia Üzletház": ["Uránváros felé", "Belváros felé"],
+            "Mecsek Áruház": ["Ybl Miklós u; Uránváros felé", "Belváros, Kertváros felé", "Esztergár Lajos u; Uránváros felé"],
+            "Kulturális Központ": ["Uránváros felé", "Belváros felé"],
+            "Tüzér utca": ["Belváros, Kertváros felé", "Uránváros felé"],
+            "PÉTÁV": ["Uránváros, Klinikák felé", "Kertváros felé"],
+            "Megyeri kishíd": ["Uránváros, Klinikák felé", "Kertváros felé"],
+            "Expo Center": ["Uránváros, Klinikák felé", "Kertváros felé"],
+            "Nagy Imre út": ["Kertváros felé", "Belváros felé"],
+            "Krisztina tér": ["Kertváros felé", "Belváros felé"],
+            "Aidinger János út": ["Belváros felé", "Kertváros felé"],
+            "Sztárai Mihály út": ["Belváros felé", "Csontváry utca és Kertváros felé"],
+            "Csontváry utca": ["Belváros felé", "Kertváros felé"],
+            "Várkonyi Nándor utca": ["Kertváros felé", "Belváros felé"],
+            "Lahti utca": ["Kertváros felé", "Belváros felé"],
+            "Bogár utca": ["Belváros felé", "Kertváros felé", "Ideiglenes megálló"], // ideiglenes megallo ?
+            "Vásártér": ["Csontváry utca felé", "Uránváros felé", "Belváros felé"],
+            "Fagyöngy utca": ["Végállomás", "Déli Ipari park felé"],
+            "Csipke utca": ["Belváros felé", "Fagyöngy utca felé"],
+            "Málom-hegyi út": ["Fagyöngy utca felé", "Belváros felé"],
+            "Gadó utca": ["Fagyöngy utca felé", "Belváros felé"],
+            "Tildy Zoltán utca": ["Fagyöngy utca felé", "Belváros, Kertváros felé"],
+            "Egyetemváros": ["Belváros felé", "Uránváros, Kertváros felé"],
+            "Haema Plasma plazma központ": ["Uránváros, Kertváros felé", "Belváros felé"],
+            "Petőfi utca": ["Uránváros felé", "Alkotmány utca felé", "Belváros felé", "Kertváros, Főpályaudvar felé"],
+            "Kórház tér": ["Barbakán és Petőfi utca felé", "Zsolnay-szobor felé"],
+            "Árkád": ["Főpályaudvar felé", "Uránváros és Főpályaudvar felé", "Búza tér felé", "Kertváros és Budai Állomás felé"],
+            "48-as tér": ["Budai Állomás felé", "Belváros felé"],
+            "Zsolnay Negyed": ["Belváros felé", "Budai Állomás felé"],
+            "Mohácsi út": ["Hőerőmű felé", "Budai Állomás felé", "Belváros felé"],
+            "Gyárvárosi templom": ["Belváros felé", "Budai Állomás felé", "Dózsa György utca felé"],
+            "Budai Állomás": ["2-es kocsiállás", "3-as kocsiállás", "4-es kocsiállás", "6-os kocsiállás", "Árpádtető felé", "Belváros felé"],
+            "Budai vám": ["Belváros felé", "Árpádtető felé"],
+            "Meszesi iskola": ["Fehérhegy felé", "Belváros felé"],
+            "Kőrös utca": ["Belváros felé", "Fehérhegy felé"],
+            "Meszes": ["Fehérhegy felé", "Belváros felé"],
+            "Fehérhegy": ["Árpádtető felé", "Belváros felé"],
+            "Árpád utca": ["Belváros felé", "Mecsekszabolcs felé"],
+            "Szőlőhegyi út": ["Belváros felé", "Mecsekszabolcs felé"],
+            "Mecsekszabolcs": ["Belváros felé"],
+            "Hősök tere forduló": ["Belváros felé"],
+            "Hősök tere": ["Árpádtető felé", "Budai Állomás felé"],
+            "Ibolya utca": ["Belváros felé", "Hősök tere felé"],
+            "Bánomi út": ["Árpádtető felé", "Belváros felé"],
+            "Andrássy út": ["Belváros felé", "Petőfi-akna felé"],
+            "Eperfás út": ["Somogy, Vasas, Hird felé", "Belváros felé"],
+            "Danitz puszta": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Ördögárok": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Murom": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Őrmezei út, Szödrös": ["Somogy, Vasas, Hird felé", "Belváros felé"],
+            "Somogyi temető": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Somogyi templom": ["Belváros felé", "István-akna felé", "Belváros, Vasas felé", "Vasas, Hird felé"],
+            "Máladó utca": ["Petőfi-akna, Hird felé", "Belváros felé"],
+            "Gabona utca": ["Petőfi-akna felé", "Belváros felé"],
+            "Vashíd": ["Petőfi-akna, Hird felé", "Belváros felé"],
+            "Vasasi temető": ["Petőfi-akna és Hird felé", "Belváros felé"],
+            "Bethlen Gábor utca": ["Belváros felé", "Petőfi-akna felé"],
+            "Vasasi iskola": ["Petőfi-akna felé", "Belváros felé"],
+            "Bencze József utca": ["Belváros felé", "Petőfi-akna felé"],
+            "M utca": ["Petőfi-akna felé", "Belváros felé"],
+            "Petőfi-akna": ["Belváros felé"],
+            "Kertváros": ["1-es kocsiállás", "2-es kocsiállás", "4-es kocsiállás", "6-os kocsiállás", "7-es kocsiállás"],
+            "Berzsenyi utca": ["Belváros felé", "Kertváros felé"],
+            "Árnyas út": ["Kertváros felé", "Belváros felé"],
+            "Szövetség utca": ["Kertváros felé", "Belváros felé"],
+            "Bőrgyár": ["Kertváros felé", "Belváros felé"],
+            "Ipar utca": ["Főpályaudvar és Vásárcsarnok felé"],
+            "Főpályaudvar": ["1-es kocsiállás", "2-es kocsiállás", "3-as kocsiállás", "4-es kocsiállás", "8-as kocsiállás", "Kertváros, Uránváros felé", "Budai Állomás felé"],
+            "Autóbusz-állomás": ["Kertváros felé", "Belváros felé"],
+            "Vásárcsarnok": ["Főpályaudvar felé", "Belváros felé"],
+            "Árkád, Bajcsy-Zsilinszky utca": ["Klinikák felé"],
+            "Kodály Zoltán utca": ["Klinikák felé"],
+            "Alkotmány utca": ["Belváros felé", "Klinikák felé"],
+            "Ifjúság útja": ["Klinikák felé", "Belváros, Kertváros felé"],
+            "Klinikák": ["Belváros, Kertváros felé"],
+            "Szőnyi Ottó utca, rendelő": ["Belváros felé", "Uránváros felé"],
+            "Műjégpálya": ["Belváros felé", "Uránváros felé"],
+            "Megyeri út": ["Belváros felé"],
+            "Kandó Kálmán utca": ["Uránváros felé", "Belváros felé"],
+            "Rét utca": ["Uránváros felé", "Belváros felé"],
+            "Árpádtető, 66-os út": ["Belváros felé", "Árpádtető felé"],
+            "Árpádtető": ["Belváros felé"],
+            "Sportcsarnok": ["Uránváros felé"],
+            "Gesztenyés": ["Belváros és Benczúr Gyula utca felé"],
+            "Ezeréves": ["Belváros felé", "Geszrenyés felé"],
+            "Bazsó": ["Belváros felé", "Gesztenyés felé"],
+            "Csárda utca": ["Gesztenyés felé", "Meszes felé"],
+            "Kénes út": ["Kórház felé", "Budai Állomás felé"],
+            "Széchenyi-akna": ["Belváros felé", "Gesztenyés felé"],
+            "Kórház": ["Gesztenyés felé", "Belváros felé"],
+            "István-akna": ["Főpályaudvar felé"],
+            "István-akna I.": ["Budai Állomás felé", "István-akna felé"],
+            "István-akna II.": ["Budai Állomás felé", "István-akna felé"],
+            "István III. akna": ["István-akna felé", "Budai Állomás felé"],
+            "Palahegyi út": ["Újhegy felé", "Belváros felé"],
+            "Koksz utca": ["Belváros felé", "Újhegy felé"],
+            "Arasz utca": ["Újhegy felé", "Belváros felé"],
+            "ABC áruház": ["Belváros felé", "Újhegy felé"],
+            "Kozári utca": ["Újhegy felé", "Belváros felé"],
+            "Kakukk utca": ["Belváros felé", "Újhegy felé"],
+            "Újhegy": ["Belváros felé"],
+            "Kerékhegy": ["Belváros felé", "Hird felé"],
+            "Hirdi út": ["Belváros felé", "Szövőgyár utca felé"],
+            "Szövőgyár utca": ["Főpályaudvar, Hird, Harangláb utca és Krisztina tér felé"],
+            "Zengő utca": ["Hird, Harangláb utca felé", "Belváros felé"],
+            "Hadik András utca": ["Hird, Harangláb utca felé", "Belváros felé"],
+            "Hird, Harangláb utca": ["Főpályaudvar és Krisztina tér felé"],
+            "Rücker akna": ["Somogy felé", "István-akna felé"],
+            "Somogy kőbánya": ["István-akna felé", "Somogy felé"],
+            "Somogy": ["Hird, Harangláb utca, Főpályaudvar és Petőfi-akna felé"],
+            "Somogy utca": ["István-akna felé", "Belváros, Vasas felé"],
+            "Littke József utca": ["Kertváros felé", "Belváros felé"],
+            "Temető déli kapu": ["Kertváros felé", "Belváros felé"],
+            "Temető északi kapu": ["Kertváros felé", "Belváros felé"],
+            "Béke utca": ["Belváros felé", "Kertváros felé"],
+            "Eszék utca": ["Malomvölgyi út felé", "Belváros felé"],
+            "Derék-réti út": ["Belváros felé", "Malomvölgyi út felé"],
+            "Malomvölgyi út": ["Főpályaudvar és Hőtávvezeték felé"],
+            "Málom italbolt": ["Malomvölgyi út felé"],
+            "Málom tejcsarnok": ["Malomvölgyi út felé"],
+            "Árpádtetői elágazás": ["István-akna felé", "Budai Állomás felé"],
+            "Béta-aknai út": ["István-akna felé", "Budai Állomás felé"],
+            "Finn utca": ["Belváros és Kertváros felé"],
+            "Rákóczi út": ["Kertváros, Főpályaudvar felé", "48-as tér, Búza tér felé"],
+            "Téglagyár": ["Belváros felé", "Hőerőmű felé"],
+            "Strauss Metal": ["Belváros felé", "Hőerőmű felé"],
+            "Alexandra": ["Uránváros és Kertváros felé"],
+            "Francia utca": ["Uránváros és Kertváros felé"],
+            "Edison utca": ["Hőerőmű felé", "Belváros felé"],
+            "Hőerőmű": ["Belváros és Kertváros felé"],
+            "Szabadság utca": ["Uránváros felé", "Belváros felé"],
+            "Árkád, autóbusz állomás": ["Postavölgy, Mohácsi út felé", "Uránváros felé"],
+            "Autójavító": ["Belváros felé", "Budai Állomás felé"],
+            "Pécsbánya-rendező": ["Belváros felé", "Baromfifeldolgozó felé"],
+            "Baromfifeldolgozó": ["Belváros felé", "Kertváros felé", "Uránváros felé"],
+            "Árpádváros": ["Belváros felé", "Rovitex felé"],
+            "Enyezd utca": ["Uránváros felé"],
+            "Megyeri tér": ["Belváros felé"],
+            "Tüzér u., Nendtvich A. út": ["Belváros felé", "Uránváros felé"],
+            "Nendvitch A. út, Ybl M. u.": ["Mecsek Áruház felé", "Belváros felé"],
+            "Pázmány Péter utca": ["Ürög felé", "Belváros felé"],
+            "Híd": ["Belváros felé", "Ürög felé"],
+            "Ürög alsó": ["Belváros felé", "Deindol felé"],
+            "Fülemüle utca": ["Belváros felé", "Nagydeindol felé"],
+            "Égervölgy": ["Északi irány", "Belváros felé"],
+            "Ürög felső": ["Deindol felé", "Nagydeindol felé", "Belváros felé"],
+            "Istenkút": ["Belváros felé", "Nagydeindoli utca; Belváros felé", "Deindol felé"],
+            "Márialak": ["Nagydeindol felé", "Belváros felé"],
+            "Nagydeindol": ["Fagyöngy utca felé"],
+            "Deindol": ["Fagyöngy utca felé"],
+            "Hűvösvölgy": ["Belváros felé", "Deindol felé"],
+            "Kereszt": ["Belváros felé", "Deindol felé"],
+            "Abaligeti út": ["Belváros felé", "Mecsekszentkút felé"],
+            "Kismélyvölgy dűlő": ["Belváros felé", "Mecsekszentkút felé"],
+            "Mecsekszentkút": ["Fagyöngy utca felé"],
+            "Dózsa György utca": ["Belváros, II-es rakodó és Gesztenyés felé"],
+            "Engel János J. utca": ["Dózsa György utca felé", "Budai Állomás felé", "Gesztenyés felé", "Belváros felé"],
+            "Pósa Lajos utca": ["Belváros felé", "Engel János József utca felé"],
+            "Ledina": ["Belváros felé", "Pósa Lajos utca felé"],
+            "Bóbita Bábszínház": ["Buda Állomás és Gesztenyés felé", "Belváros felé"],
+            "Major utca": ["Ledina felé", "Belváros felé"],
+            "Búza tér": ["Belváros felé", "Ágoston tér és Ledina felé"],
+            "Gyümölcs utca": ["Uránváros felé", "Belváros felé"],
+            "Szigeti út, Szántó K. J. u.": ["Belváros felé", "Uránváros felé"],
+            "Bolgár köz": ["Belváros felé", "Patacs felé"],
+            "Rácváros": ["Belváros felé", "II-es rakodó, Benczúr Gyula utca felé"],
+            "Patacsi elágazás": ["Benczúr Gyula utca felé", "II-es rakodó felé"],
+            "Patacsi Kultúrház": ["Belváros felé", "Benczúr Gyula utca felé"],
+            "Kovács Béla utca": ["Benczúr Gyula utca felé", "Belváros felé"],
+            "Benczúr Gyula utca": ["II-es rakodó, Belváros és Gesztenyés felé"],
+            "Bázis út": ["Uránváros felé"],
+            "Nagy-Berki út": ["Uránváros felé"],
+            "Tettye Forrásház": ["Uránváros felé"],
+            "Softflow Kutatóközpont": ["II-es rakodó felé", "Belváros felé"],
+            "Kutató dűlő": ["II-es rakodó felé", "Belváros felé"],
+            "Pellérdi elágazás": ["II-es rakodó felé", "Belváros felé"],
+            "Cserkúti Csárda": ["II-es rakodó felé", "Belváros felé"],
+            "Cserkút tető": ["II-es rakodó felé", "Belváros felé"],
+            "II-es rakodó": ["Belváros felé"],
+            "Selmecz utca": ["Belváros felé", "Gesztenyés felé"],
+            "Malom": ["Belváros felé", "Gesztenyés felé"],
+            "Háromhíd": ["Gesztenyés felé", "Belváros felé"],
+            "Nagymeszes": ["Gesztenyés felé", "Belváros felé"],
+            "Bittner Alajos út": ["Gesztenyés felé", "Belváros felé"],
+            "Református Gimnázium": ["Gesztenyés felé", "Belváros felé"],
+            "Lámpásvölgy": ["Belváros, II-es rakodó felé"],
+            "Alsógyükés": ["Lámpásvölgy felé", "Belváros felé"],
+            "Feketehegy": ["Lámpásvölgy felé", "Belváros felé"],
+            "Borbálatelep": ["Belváros felé", "Lámpásvölgy felé"],
+            "Kató-lak": ["Belváros felé", "Borbálatelep felé"],
+            "Hársfa út": ["Lámpásvölgy felé", "Belváros felé"],
+            "Jánoskút": ["Belváros felé", "Borbálatelep felé"],
+            "Bártfa utca": ["Belváros felé", "Lámpásvölgy felé"],
+            "Hajnal utca": ["Belváros felé", "Lámpásvölgy felé"],
+            "Sándor utca": ["Belváros felé", "Gyükés, Borbálatelep felé"],
+            "Ágoston tér": ["Belváros felé", "Tettye felé"],
+            "András utca": ["Lámpásvölgy és Főpályaudvar felé"],
+            "Erzsébettelep": ["Gyükés felé", "Belváros felé"],
+            "Mészégető": ["Belváros felé", "Gyükés felé"],
+            "Szamárkút": ["Gyükés felé", "Belváros felé"],
+            "Gyükés": ["Főpályaudvar felé"],
+            "Körber Hungária": ["Kertváros felé", "Belváros felé"],
+            "Szilva utca": ["Belváros felé", "Kertváros felé"],
+            "Bimbó utca": ["Belváros felé", "Kertváros felé"],
+            "Barbakán": ["Belváros felé", "Dömörkapu felé"],
+            "Damjanich utca": ["Belváros felé", "MTA-székház felé"],
+            "Szőlőskert": ["Belváros felé", "MTA-székház felé"],
+            "Jurisics Miklós utca": ["Barbakán felé", "MTA-székház felé"],
+            "MTA-székház": ["Belváros felé", "Bálics, Pálosok felé"],
+            "Csillagvirág utca": ["MTA-székház felé", "Pálosok felé"],
+            "Kisszkókó dűlő": ["MTA-székház felé", "Pálosok felé"],
+            "Petőfi ház": ["MTA-székház felé", "Pálosok felé"],
+            "Surányi Miklós út": ["MTA-székház felé", "Pálosok felé"],
+            "Pálosok": ["MTA-székház felé", "Belváros felé", "Tettye felé", "Állatkert felé"],
+            "Gergely utca": ["Tettye, Havihegyi út felé"],
+            "Tettye tér": ["Tettye, Havihegyi út felé", "Belváros felé"],
+            "Tettye, Havhihegyi út": ["Főpályaudvar felé"],
+            "Alagút": ["Dömörkapu felé", "Főpályaudvar felé"],
+            "Tettye utca": ["Ágoston tér felé", "Alagút felé"],
+            "István utca": ["Alagút felé", "Ágoston tér felé"],
+            "Mecsek kapu": ["Állatkert felé"],
+            "Kőbánya": ["Állatkert felé", "Belváros felé"],
+            "Hotel Kikelet": ["Belváros felé", "Állatkert felé"],
+            "Állatkert": ["Dömörkapu felé", "Belváros felé"],
+            "Mandulás": ["Állatkert felé", "Szanatórium felé"],
+            "Báránytető": ["Belváros felé", "Szanatórium felé"],
+            "Szanatórium": ["Dömörkapu és Misinatető felé"],
+            "Dömörkapu": ["Főpályaudvar felé"],
+            "Misinatető": ["Főpályaudvar felé"],
+            "Krisztián": ["Bálics felé", "Belváros felé"],
+            "Bálics": ["Belváros felé", "Bálicstető felé"],
+            "Bálicstető": ["Főpályaudvar felé"],
+            "Gyermekkórház": ["Belváros felé", "Donátus felé"],
+            "Rodostó utca": ["Belváros felé", "Donátus felé"],
+            "Angster József utca": ["Bálics felé", "Barbakán felé", "Donátus felé", "Petőfi utca felé"],
+            "Donátusi út": ["Donátus felé", "Belváros felé"],
+            "Gólya dűlő": ["Belváros felé", "Donátus felé"],
+            "Lepke dűlő": ["Donátus felé", "Belváros felé"],
+            "Donátus": ["Főpályaudvar felé"],
+            "Hőtávvezeték": ["Rovitex felé", "Belváros felé"],
+            "Kálinger": ["Belváros felé", "Rovitex felé"],
+            "Trafóház": ["Belváros felé", "Rovitex felé"],
+            "Vegyesbolt": ["Rovitex felé", "Belváros felé"],
+            "Postavölgy alsó": ["Rovitex felé", "Belváros felé"],
+            "Postavölgy": ["Rovitex felé", "Belváros felé"],
+            "Postavölgy felső": ["Belváros felé", "Rovitex felé"],
+            "Rovitex": ["Főpályaudvar felé"],
+            "Interspar": ["Belváros felé", "Nagyárpád felé"],
+            "Temető keleti kapu": ["Nagyárpád felé", "Belváros felé"],
+            "Csárda": ["Belváros felé", "Nagyárpád felé"],
+            "Községhatár": ["Nagyárpád felé", "Belváros felé"],
+            "Kiss János utca": ["Nagyárpád felé", "Belváros felé"],
+            "Nagyárpád": ["Rovitex, Főpályaudvar és Fagyöngy utca felé"],
+            "Sörfőzde": ["Belváros felé"],
+            "Galilei utca": ["Fagyöngy utca felé"],
+            "Déri Miksa utca": ["Fagyöngy utca felé"],
+            "Időjós út": ["Fagyöngy utca felé"],
+        };
+
+        buszmegAllok = Object.fromEntries(Object.entries(buszmegAllok).sort((a, b) => a[0].localeCompare(b[0], 'hu')));
+
+        const buszmegAlloIndulasok = {
+            "Zsolnay-szobor": [{
+                "32; Főpályaudvar-Főpályaudvar": [["06:23", "06:43", "07:04", "07:24", "07:54", "08:24", "08:54", "09:24", "09:54", "10:24", "10:54", "11:24", "11:54", "12:24", "12:54", "13:14", "13:34", "13:54", "14:14", "14:34", "14:54", "15:14", "15:34", "15:54", "16:14", "16:34", "16:54", "17:23", "18:03", "18:33", "19:13", "20:13"], ["06:48", "07:33", "08:13", "08:53", "09:33", "10:13", "10:53", "11:33", "12:13", "12:53", "13:33", "14:13", "14:53", "15:33", "16:13", "16:53", "17:33", "18:13"], ["same weekend"]],
+                "32Y; Főpályaudvar-Főpályaudvar": [["04:33", "05:23"], ["04:33", "05:28"], ["same weekend"]],
+                "34; Főpályaudvar-Dömörkapu": [["04:37", "05:37", "06:07", "06:37", "07:07", "13:07", "13:37", "14:37", "15:07", "15:37", "16:07"], ["08:52", "10:52", "12:52", "14:52", "16:52",], ["same weekend"]],
+                "34Y; Főpályaudvar-Dömörkapu": [["07:40", "08:40", "09:10", "09:40", "10:40", "11:10", "11:40", "12:40", "16:40", "17:55", "18:55", "19:54", "20:54", "21:54", "22:54"], ["05:39", "06:39", "18:55", "19:54", "20:54", "21:54", "22:54",], ["same weekend"]],
+                "35; Főpályaudvar-Misinatető": [["14:07"], ["07:37:", "09:52", "11:52", "13:52", "15:52", "17:52",], ["same weekend"]],
+                "35Y; Főpályaudvar-Misinatető": [["08:10", "10:10", "12:10", "17:10"], [], []],
+                "36; Főpályaudvar-Bálicstető": [["06:42"], [], []],
+                "37; Főpályaudvar-Donátus": [["06:52", "07:47", "08:52", "09:52", "10:52", "11:52", "12:52", "13:52", "14:52", "15:52", "16:52", "17:22", "17:52", "18:32", "19:02", "19:52", "20:51", "21:51"], ["04:31", "05:46", "06:46", "11:52", "12:52", "13:52", "14:52", "15:52", "16:52", "17:52", "18:52", "19:52", "20:51", "21:51"], ["04:31", "05:46", "06:46", "07:52", "08:52", "09:52", "10:52", "11:52", "12:52", "13:52", "14:52", "15:52", "16:52", "17:52", "18:52", "19:52", "20:51", "21:52"]],
+                "46; Főpályaudvar-Főpályaudvar": [["04:17", "04:57", "05:37", "06:19", "07:12", "08:17", "09:22", "10:22", "11:22", "12:22", "13:22", "14:22", "15:22", "16:22"], ["07:49", "08:49", "09:49", "10:49",], []],
+                "47; Főpályaudvar-Donátus-Főpályaudvar": [["22:51"], ["same weekday"], ["same weekday"]]
+            }, [{
+                "2; Mecsekszabolcs-Uránváros": [],
+                "2A; Hősök tere-Uránváros": [],
+                "2A; Fehérhegy-Uránváros": [],
+                "102; Petőfi-akna-Uránváros": [],
+                "102Y; Petőfi-akna-Uránváros": [],
+                "103; Kertváros-Klinikák": [],
+                "4Y; Újhegy-Klinikák": [],
+                "109E; Fagyöngy utca-Klinikák": [],
+                "30; Főpályaudvar-Klinikák": [],
+                "30Y; Kertváros-Klinikák": [],
+                "27; Gesztenyés-Benczúr Gyula utca": [],
+                "27Y; Gesztenyés-II-es rakodó": [],
+                "26; Budai Állomás-II-es rakodó": [],
+                "28; Lámpásvölgy-II-es rakodó": [],
+                "28A; Lámpásvölgy-Uránváros": [],
+                "28Y; Lámpásvölgy-Uránváros": [],
+                "932; Főpályaudvar-Főpályaudvar": []
+            }], [{
+                "22; Fagyöngy utca / Kertváros-Nagydeindol": [],
+                "24; Fagyöngy utca-Mecsekszentkút": [],
+                "23; Fagyöngy utca-Deindol": [],
+                "23Y; Fagyöngy utca-Deindol": [],
+                "30Y; Klinikák-Kertváros": [],
+                "30, 32, 32Y, 34, 34Y, 35Y, 46; Főpályaudvar felé Vásárcsarnok érintésével": [],
+                "3E, 7, 7Y, 14, 14Y, 34, 35, 36, 37, 38, 38Y, 39, 40, 140, 47, 73, 932, 940, 973; Főpályaudvar felé": [],
+            }], [{
+                "2; Uránváros-Mecsekszabolcs": [],
+                "2A; Uránváros-Hősök tere": [],
+                "2A; Uránváros-Fehérhegy": [],
+                "102; Uránváros-Petőfi-akna": [],
+                "102Y; Uránváros-Petőfi-akna (Somogy betérés)": [],
+                "3; Kertváros-Árkád-Kertváros": [],
+                "103; Klinikák-Kertváros": [],
+                "6; Ipar utca-Kertváros": [],
+                "8; Ipar utca-Fagyöngy utca": [],
+                "14; Főpályaudvar-Petőfi-akna": [],
+                "14Y; Főpályaudvar-Petőfi-akna (Somogy betérés)": [],
+                "22; Nagydeindol-Fagyöngy utca": [],
+                "23; Deindol-Fagyöngy utca": [],
+                "23Y; Deindol-Fagyöngy utca": [],
+                "24; Mecsekszentkút-Fagyöngy utca": [],
+                "25; Benczúr Gyula utca-Budai Állomás": [],
+                "26; II-es rakodó-Budai Állomás": [],
+                "27; Benczúr Gyula utca-Gesztenyés": [],
+                "27Y; II-es rakodó-Gesztenyés": [],
+                "40; Főpályaudvar-Gesztenyés": [],
+                "940; Főpályaudvar-Főpályaudvar": [],
+                "28; II-es rakodó-Lámpásvölgy": [],
+                "28Y; Uránváros-Lámpásvölgy": [],
+                "38; Főpályaudvar-Lámpásvölgy": [],
+                "38Y; Főpályaudvar-Lámpásvölgy (András utca betérés)": [],
+                "140; Főpályaudvar-Gesztenyés": [],
+                "29; II-es rakodó-Gyükés": [],
+                "39; Főpályaudvar-Gyükés": [],
+                "7; Főpályaudvar-Malomvölgyi út": [],
+                "7Y; Főpályaudvar-Malomvölgyi út (Málom betérés)": [],
+                "73; Főpályaudvar-Malomvölgyi út": [],
+                "73Y; Főpályaudvar-Malomvölgyi út (Málom betérés)": [],
+                "973; Főpályaudvar-Malomvölgyi út": [],
+            }]]
+        };
+
+        // months
+        /*
+        january - 0
+        february - 1
+        march - 2
+        april - 3
+        may - 4
+        june - 5
+        july - 6
+        august - 7
+        september - 8
+        october - 9
+        november - 10
+        december - 11
+        */
+        function isNationalHoliday(currentDate) {
+            let monthDayDate = currentDate.getMonth() + "" + currentDate.getDate();
+            const holidays = ["01", "215", "229", "231", "31", "41", "419", "420", "720", "923", "101", "1124", "1125", "1126", "1131"];
+
+            for (let e of holidays) {
+                if (monthDayDate === e) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function showBuszmegalloIndulasok() {
+            for (let key in buszmegAllok) {
+                let newOption = document.createElement("option");
+                newOption.text = key;
+                buszmegAllokSelect.appendChild(newOption);
+            }
+            buszmegAllokSelect.addEventListener("change", function (e) {
+                buszmegalloReszekDiv.innerHTML = ``;
+                let table = document.createElement("table");
+                table.id = "indulasokTablazat";
+                let foundQualifyingTimes = false;
+                for (let i = 0; i < buszmegAllok[e.target.value].length; i++) {
+                    let newBuszmegResz = document.createElement("button");
+                    newBuszmegResz.textContent = buszmegAllok[e.target.value][i];
+                    buszmegalloReszekDiv.appendChild(newBuszmegResz);
+                    newBuszmegResz.addEventListener("click", function (event) {
+                        table.innerHTML = ``;
+                        currentDate = new Date();
+                        currentDay = currentDate.getDay();
+                        buszmegalloindulobuszokDiv.innerHTML = ``;
+                        let buszmegIndex = Array.from(buszmegalloReszekDiv.children).indexOf(event.target);
+                        let kivalasztottBuszmeg = buszmegAlloIndulasok[e.target.value][buszmegIndex];
+                        let correctIndexByDate = 0;
+                        if (isNationalHoliday(currentDate)) {
+                            correctIndexByDate = 2;
+                        } else if (checkDayType(currentDay) === "weekday") {
+                            correctIndexByDate = 0;
+                        } else {
+                            correctIndexByDate = 1;
+                        }
+                        for (let key in kivalasztottBuszmeg) {
+                            for (let element of kivalasztottBuszmeg[key][correctIndexByDate]) {
+                                if (element === "same weekend") {
+                                    correctIndexByDate = 1;
+                                }
+                                else if (element === "same weekday") {
+                                    correctIndexByDate = 0;
+                                }
+                            }
+                            let arrivalTimes = kivalasztottBuszmeg[key][correctIndexByDate];
+                            let qualifyingArrivalTimes = [];
+                            for (let time of arrivalTimes) {
+                                let [arrivalHrs, arrivalMins] = time.split(":").map(Number);
+                                let arrivalTimeInMinutes = arrivalHrs * 60 + arrivalMins;
+                                const currentTimeInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+                                if (arrivalTimeInMinutes < currentTimeInMinutes) {
+                                    arrivalTimeInMinutes += 24 * 60;
+                                }
+                                const timeLeftUntilArrival = arrivalTimeInMinutes - currentTimeInMinutes;
+                                if (timeLeftUntilArrival > 0 && timeLeftUntilArrival <= 90) {
+                                    qualifyingArrivalTimes.push(`${time} (${timeLeftUntilArrival} perc)`);
+                                }
+                            }
+                            if (qualifyingArrivalTimes.length > 0) {
+                                let jaratRow = table.insertRow();
+                                let jaratSzamTh = document.createElement("th");
+                                let keyArray = key.split(";").map(str => str.trim());
+                                jaratSzamTh.innerText = keyArray[0];
+                                jaratRow.appendChild(jaratSzamTh);
+                                let iranyTdFirst = jaratRow.insertCell();
+                                iranyTdFirst.innerText = keyArray[1];
+                                let iranyTdTwo = jaratRow.insertCell();
+                                iranyTdTwo.innerText = qualifyingArrivalTimes.join("\n");
+                                foundQualifyingTimes = true;
+                            }
+                            else {
+                                continue;
+                            }
+                        }
+                        if (!foundQualifyingTimes) {
+                            let emptyRow = table.insertRow();
+                            let emptyCell = emptyRow.insertCell();
+                            emptyCell.colSpan = 3;
+                            emptyCell.innerText = "Nem indulnak buszon 90 percen belül ebből a megállóból"
+                        }
+                    });
+                }
+                document.body.appendChild(table);
+            });
+        }
+
+        showBuszmegalloIndulasok();
+    </script>
+</body>
+
+</html>

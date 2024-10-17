@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body,
+        html {
+            height: 100%;
+            background-color: black;
+        }
+
+        main {
+            width: 100%;
+            height: 70%;
+            background-color: #7eb437;
+        }
+
+        #main-bg-div {
+            transform: translateY(25%);
+            padding: 30px;
+            width: 52.2%;
+            height: 60.1%;
+            display: grid;
+            gap: 50px;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+
+        #main-bg-div img {
+            width: 1000px;
+            height: 400px;
+            border-radius: 24px;
+            border: 3px solid white;
+            transition: all 0.5s;
+            position: absolute;
+        }
+
+        #main-content {
+            width: 41%;
+            height: 500px;
+            position: absolute;
+            right: 2%;
+            top: 13%;
+        }
+
+        #main-bus-stop-phone {
+            border: 3px solid white;
+            background-color: black;
+            letter-spacing: 1px;
+            color: white;
+            width: 350px;
+            height: 570px;
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            display: grid;
+            gap: 20px;
+            transition: all 0.4s;
+        }
+
+        #main-search-bus-stop {
+            width: 270px;
+            height: 30px;
+            position: fixed;
+            border-radius: 24px;
+            top: 23%;
+            outline: none;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid green;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        #main-search-bus-stop::placeholder {
+            color: white;
+            opacity: 0.5;
+        }
+
+        #main-bus-stop-choices::-webkit-scrollbar {
+            width: 10px;
+            background-color: transparent;
+            border-radius: 12px;
+        }
+
+        #main-bus-stop-choices::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 12px;
+        }
+
+        #main-bus-stop-choices {
+            height: 350px;
+            overflow: auto;
+            transition: all 0.5s;
+            transform: translateY(3%);
+        }
+
+        #main-bus-stop-choices .choice,
+        .selected-choice,
+        .buszmegallo-resz-choice {
+            border: 2px solid green;
+            height: 50px;
+            width: 280px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background-color: transparent;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        #main-bus-stop-choices .choice:hover {
+            cursor: pointer;
+        }
+
+        #buszmegallo-reszek-div {
+            height: fit-content;
+            width: 300px;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        #buszmegallo-reszek-div:hover {
+            cursor: pointer;
+        }
+
+        #main-bus-stop-back-button {
+            width: 80px;
+            height: 30px;
+            border-radius: 12px;
+            border: none;
+            background-color: green;
+            color: white;
+            position: fixed;
+            bottom: 29%;
+            right: 37.5%;
+        }
+
+        #main-bus-stop-back-button:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div id="main-bg-div">
+            <img src="./hd-background.jpg" alt="hd-background">
+            <img src="./hd-background-1.png" alt="hd-background-1">
+            <img src="./hd-background-2.jpg" alt="hd-background-2">
+            <img src="./hd-background-3.jpg" alt="hd-background-3">
+            <img src="./hd-background-4.jpg" alt="hd-background-4">
+        </div>
+        <div id="main-content">
+            <div id="main-bus-stop-phone">
+                <h2>Válaszd ki a buszmegállót!</h2>
+                <input type="text" id="main-search-bus-stop" placeholder="Keress buszmegállót...">
+                <div id="main-bus-stop-choices"></div>
+                <button id="main-bus-stop-back-button">Vissza</button>
+            </div>
+        </div>
+    </main>
+    <script>
+
+        function imageSlideAnimation() {
+            const mainBgImages = document.querySelectorAll("#main-bg-div img");
+            const totalImages = mainBgImages.length;
+            const animationDuration = 5000;
+
+            function animateImage(index) {
+                const img = mainBgImages[index];
+                setTimeout(() => {
+                    img.style.opacity = "0";
+                    img.style.transform = "translateY(110%)";
+                }, index * animationDuration);
+
+                setTimeout(() => {
+                    img.style.opacity = "1";
+                }, index * animationDuration + 1500);
+
+                setTimeout(() => {
+                    img.style.zIndex = "1";
+                    img.style.transform = "translateY(0)";
+                }, index * animationDuration + 2000);
+            }
+
+            for (let i = 0; i < totalImages; i++) {
+                animateImage(i);
+            }
+
+            setInterval(() => {
+                mainBgImages.forEach((img, index) => {
+                    img.style.opacity = "0";
+                    img.style.zIndex = "0";
+                    setTimeout(() => {
+                        img.style.opacity = "1";
+                        img.style.zIndex = "1";
+                    }, index * animationDuration + 1500);
+                });
+            }, totalImages * animationDuration + 2000);
+        }
+    </script>
+</body>
+
+</html>

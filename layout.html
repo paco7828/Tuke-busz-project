@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body,
+        html {
+            height: 100%;
+            background-color: black;
+        }
+
+        header {
+            height: 9%;
+            display: flex;
+            color: #ffffff;
+            justify-items: flex-end;
+            align-items: center;
+            gap: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        header,
+        #main-search-bus-stop,
+        #main-bus-stop-choices::-webkit-scrollbar,
+        #main-bus-stop-choices .choice,
+        .selected-choice,
+        .buszmegallo-resz-choice {
+            background-color: transparent;
+        }
+
+        header img,
+        #buszmegallo-reszek-div {
+            width: 300px;
+        }
+
+        header nav {
+            display: flex;
+            gap: 90px;
+        }
+
+        a {
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #7eb437;
+            transition: all 0.1s;
+        }
+
+        header nav a:nth-child(5) {
+            border-right: 4px solid;
+            animation: cursorBlinking 0.7s infinite;
+        }
+
+        @keyframes cursorBlinking {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        a,
+        #main-bus-stop-phone,
+        #main-search-bus-stop,
+        #main-search-bus-stop::placeholder,
+        #main-bus-stop-back-button {
+            color: white;
+        }
+
+        main {
+            width: 100%;
+            height: 70%;
+            background-color: #7eb437;
+            transition: all 0.3s;
+        }
+
+        #main-bg-div {
+            transform: translate(4.5%, 25%);
+            padding: 30px;
+            width: 52.2%;
+            height: 60.1%;
+            gap: 50px;
+            overflow: hidden;
+            border-radius: 24px;
+            background-image: url("./hd-background-1.png");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #main-bg-div img {
+            width: 1002px;
+            height: 398px;
+            border-radius: 24px;
+            border: 3px solid white;
+            transition: all 0.5s;
+            position: absolute;
+        }
+
+        #main-content {
+            width: 41%;
+            height: 500px;
+            position: absolute;
+            right: 2%;
+            top: 13%;
+        }
+
+        #main-bus-stop-phone,
+        #main-bus-stop-choices .choice,
+        .selected-choice,
+        .buszmegallo-resz-choice,
+        #main-bg-div {
+            display: grid;
+        }
+
+        #main-bus-stop-phone {
+            border: 3px solid white;
+            background-color: black;
+            letter-spacing: 1px;
+            width: 350px;
+            height: 570px;
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            gap: 20px;
+            transition: all 0.4s;
+        }
+
+        #main-search-bus-stop {
+            width: 270px;
+            height: 30px;
+            position: fixed;
+            border-radius: 24px;
+            top: 23%;
+            outline: none;
+            border: none;
+            border-bottom: 1px solid green;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #main-search-bus-stop,
+        #main-bus-stop-choices .choice,
+        .selected-choice,
+        .buszmegallo-resz-choice,
+        #buszmegallo-reszek-div {
+            transition: all 0.3s;
+        }
+
+        #main-search-bus-stop::placeholder {
+            opacity: 0.5;
+        }
+
+        #main-bus-stop-choices::-webkit-scrollbar {
+            width: 10px;
+            border-radius: 12px;
+        }
+
+        #main-bus-stop-choices::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 12px;
+        }
+
+        #main-bus-stop-choices {
+            height: 350px;
+            overflow: auto;
+            transition: all 0.5s;
+            transform: translateY(3%);
+        }
+
+        #main-bus-stop-choices .choice,
+        .selected-choice,
+        .buszmegallo-resz-choice {
+            border: 2px solid green;
+            height: 50px;
+            width: 280px;
+            border-radius: 12px;
+            place-items: center;
+            margin-bottom: 10px;
+        }
+
+        #main-bus-stop-choices .choice:hover,
+        #buszmegallo-reszek-div:hover,
+        #main-bus-stop-back-button:hover,
+        header nav a:hover,
+        #arrivalsTable tr:hover {
+            cursor: pointer;
+        }
+
+        #buszmegallo-reszek-div {
+            height: fit-content;
+            opacity: 0;
+            display: grid;
+            position: fixed;
+            top: 30%;
+        }
+
+        #main-bus-stop-back-button {
+            width: 80px;
+            height: 30px;
+            border-radius: 12px;
+            border: none;
+            background-color: green;
+            position: fixed;
+            bottom: 29%;
+            right: 37.5%;
+            transition: all 0.3s;
+        }
+
+        .moreOptionsDiv {
+            background-color: black;
+            border: 3px solid white;
+            color: white;
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            height: fit-content;
+            width: fit-content;
+            padding: 30px;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        #tableDiv {
+            width: fit-content;
+            height: fit-content;
+            border-radius: 12px;
+            border: 4px solid green;
+            transform: all 0.4s;
+            opacity: 0;
+            transform: translateY(20%);
+        }
+
+        #arrivalsTable {
+            width: 700px;
+            height: fit-content;
+            color: white;
+            text-align: center;
+        }
+
+        tr,
+        td,
+        th,
+        #arrivalsTable {
+            border: 1px solid green;
+            padding: 10px;
+            height: 20px;
+            border-collapse: collapse;
+        }
+
+        #arrivalsTable tr td:nth-child(3) {
+            width: 200px;
+        }
+
+        tr:hover {
+            background-color: green;
+            transition: all 0.2s;
+        }
+
+        h2 {
+            transition: all 0.4s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-bg-div"></div>
+    <header>
+        <img src="./website-logo.png" alt="website-logo">
+        <nav>
+            <a href="#">Utazási információk</a>
+            <a href="#">Jegyek, bérletek</a>
+            <a href="#">Kapcsolat</a>
+            <a href="#">Mobil-app</a>
+            <a href="#">English</a>
+        </nav>
+    </header>
+    <main>
+        <div id="main-bg-div">
+            <img src="./hd-background.jpg" alt="hd-background">
+            <img src="./hd-background-1.png" alt="hd-background-1">
+            <img src="./hd-background-2.jpg" alt="hd-background-2">
+            <img src="./hd-background-3.jpg" alt="hd-background-3">
+            <img src="./hd-background-4.jpg" alt="hd-background-4">
+        </div>
+        <div id="main-content">
+            <div id="main-bus-stop-phone">
+                <h2>Válaszd ki a buszmegállót!</h2>
+                <input type="text" id="main-search-bus-stop" placeholder="Keress buszmegállót...">
+                <div id="main-bus-stop-choices"></div>
+                <button id="main-bus-stop-back-button">Vissza</button>
+            </div>
+        </div>
+    </main>
+    <footer></footer>
+    <script>
+        let buszmegAllok = {
+            "Zsolnay-szobor": ["Szabadság utca; Belváros felé", "Rákóczi út; Uránváros felé", "Szabadság utca; Főpályaudvar felé", "Rákóczi út; Budai Állomás és Kertváros"],
+            "Uránváros": ["1-es kocsiállás", "2-es kocsiállás", "3-as kocsiállás", "4-es kocsiállás", "6-os kocsiállás", "7-es kocsiállás", "8-as kocsiállás"],
+            "Olympia Üzletház": ["Uránváros felé", "Belváros felé"],
+            "Mecsek Áruház": ["Ybl Miklós u; Uránváros felé", "Belváros, Kertváros felé", "Esztergár Lajos u; Uránváros felé"],
+            "Kulturális Központ": ["Uránváros felé", "Belváros felé"],
+            "Tüzér utca": ["Belváros, Kertváros felé", "Uránváros felé"],
+            "PÉTÁV": ["Uránváros, Klinikák felé", "Kertváros felé"],
+            "Megyeri kishíd": ["Uránváros, Klinikák felé", "Kertváros felé"],
+            "Expo Center": ["Uránváros, Klinikák felé", "Kertváros felé"],
+            "Nagy Imre út": ["Kertváros felé", "Belváros felé"],
+            "Krisztina tér": ["Kertváros felé", "Belváros felé"],
+            "Aidinger János út": ["Belváros felé", "Kertváros felé"],
+            "Sztárai Mihály út": ["Belváros felé", "Csontváry utca és Kertváros felé"],
+            "Csontváry utca": ["Belváros felé", "Kertváros felé"],
+            "Várkonyi Nándor utca": ["Kertváros felé", "Belváros felé"],
+            "Lahti utca": ["Kertváros felé", "Belváros felé"],
+            "Bogár utca": ["Belváros felé", "Kertváros felé", "Ideiglenes megálló"], // ideiglenes megallo ?
+            "Vásártér": ["Csontváry utca felé", "Uránváros felé", "Belváros felé"],
+            "Fagyöngy utca": ["Végállomás", "Déli Ipari park felé"],
+            "Csipke utca": ["Belváros felé", "Fagyöngy utca felé"],
+            "Málom-hegyi út": ["Fagyöngy utca felé", "Belváros felé"],
+            "Gadó utca": ["Fagyöngy utca felé", "Belváros felé"],
+            "Tildy Zoltán utca": ["Fagyöngy utca felé", "Belváros, Kertváros felé"],
+            "Egyetemváros": ["Belváros felé", "Uránváros, Kertváros felé"],
+            "Haema Plasma plazma központ": ["Uránváros, Kertváros felé", "Belváros felé"],
+            "Petőfi utca": ["Uránváros felé", "Alkotmány utca felé", "Belváros felé", "Kertváros, Főpályaudvar felé"],
+            "Kórház tér": ["Barbakán és Petőfi utca felé", "Zsolnay-szobor felé"],
+            "Árkád": ["Főpályaudvar felé", "Uránváros és Főpályaudvar felé", "Búza tér felé", "Kertváros és Budai Állomás felé"],
+            "48-as tér": ["Budai Állomás felé", "Belváros felé"],
+            "Zsolnay Negyed": ["Belváros felé", "Budai Állomás felé"],
+            "Mohácsi út": ["Hőerőmű felé", "Budai Állomás felé", "Belváros felé"],
+            "Gyárvárosi templom": ["Belváros felé", "Budai Állomás felé", "Dózsa György utca felé"],
+            "Budai Állomás": ["2-es kocsiállás", "3-as kocsiállás", "4-es kocsiállás", "6-os kocsiállás", "Árpádtető felé", "Belváros felé"],
+            "Budai vám": ["Belváros felé", "Árpádtető felé"],
+            "Meszesi iskola": ["Fehérhegy felé", "Belváros felé"],
+            "Kőrös utca": ["Belváros felé", "Fehérhegy felé"],
+            "Meszes": ["Fehérhegy felé", "Belváros felé"],
+            "Fehérhegy": ["Árpádtető felé", "Belváros felé"],
+            "Árpád utca": ["Belváros felé", "Mecsekszabolcs felé"],
+            "Szőlőhegyi út": ["Belváros felé", "Mecsekszabolcs felé"],
+            "Mecsekszabolcs": ["Belváros felé"],
+            "Hősök tere forduló": ["Belváros felé"],
+            "Hősök tere": ["Árpádtető felé", "Budai Állomás felé"],
+            "Ibolya utca": ["Belváros felé", "Hősök tere felé"],
+            "Bánomi út": ["Árpádtető felé", "Belváros felé"],
+            "Andrássy út": ["Belváros felé", "Petőfi-akna felé"],
+            "Eperfás út": ["Somogy, Vasas, Hird felé", "Belváros felé"],
+            "Danitz puszta": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Ördögárok": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Murom": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Őrmezei út, Szödrös": ["Somogy, Vasas, Hird felé", "Belváros felé"],
+            "Somogyi temető": ["Belváros felé", "Somogy, Vasas, Hird felé"],
+            "Somogyi templom": ["Belváros felé", "István-akna felé", "Belváros, Vasas felé", "Vasas, Hird felé"],
+            "Máladó utca": ["Petőfi-akna, Hird felé", "Belváros felé"],
+            "Gabona utca": ["Petőfi-akna felé", "Belváros felé"],
+            "Vashíd": ["Petőfi-akna, Hird felé", "Belváros felé"],
+            "Vasasi temető": ["Petőfi-akna és Hird felé", "Belváros felé"],
+            "Bethlen Gábor utca": ["Belváros felé", "Petőfi-akna felé"],
+            "Vasasi iskola": ["Petőfi-akna felé", "Belváros felé"],
+            "Bencze József utca": ["Belváros felé", "Petőfi-akna felé"],
+            "M utca": ["Petőfi-akna felé", "Belváros felé"],
+            "Petőfi-akna": ["Belváros felé"],
+            "Kertváros": ["1-es kocsiállás", "2-es kocsiállás", "4-es kocsiállás", "6-os kocsiállás", "7-es kocsiállás"],
+            "Berzsenyi utca": ["Belváros felé", "Kertváros felé"],
+            "Árnyas út": ["Kertváros felé", "Belváros felé"],
+            "Szövetség utca": ["Kertváros felé", "Belváros felé"],
+            "Bőrgyár": ["Kertváros felé", "Belváros felé"],
+            "Ipar utca": ["Főpályaudvar és Vásárcsarnok felé"],
+            "Főpályaudvar": ["1-es kocsiállás", "2-es kocsiállás", "3-as kocsiállás", "4-es kocsiállás", "8-as kocsiállás", "Kertváros, Uránváros felé", "Budai Állomás felé"],
+            "Autóbusz-állomás": ["Kertváros felé", "Belváros felé"],
+            "Vásárcsarnok": ["Főpályaudvar felé", "Belváros felé"],
+            "Árkád, Bajcsy-Zsilinszky utca": ["Klinikák felé"],
+            "Kodály Zoltán utca": ["Klinikák felé"],
+            "Alkotmány utca": ["Belváros felé", "Klinikák felé"],
+            "Ifjúság útja": ["Klinikák felé", "Belváros, Kertváros felé"],
+            "Klinikák": ["Belváros, Kertváros felé"],
+            "Szőnyi Ottó utca, rendelő": ["Belváros felé", "Uránváros felé"],
+            "Műjégpálya": ["Belváros felé", "Uránváros felé"],
+            "Megyeri út": ["Belváros felé"],
+            "Kandó Kálmán utca": ["Uránváros felé", "Belváros felé"],
+            "Rét utca": ["Uránváros felé", "Belváros felé"],
+            "Árpádtető, 66-os út": ["Belváros felé", "Árpádtető felé"],
+            "Árpádtető": ["Belváros felé"],
+            "Sportcsarnok": ["Uránváros felé"],
+            "Gesztenyés": ["Belváros és Benczúr Gyula utca felé"],
+            "Ezeréves": ["Belváros felé", "Geszrenyés felé"],
+            "Bazsó": ["Belváros felé", "Gesztenyés felé"],
+            "Csárda utca": ["Gesztenyés felé", "Meszes felé"],
+            "Kénes út": ["Kórház felé", "Budai Állomás felé"],
+            "Széchenyi-akna": ["Belváros felé", "Gesztenyés felé"],
+            "Kórház": ["Gesztenyés felé", "Belváros felé"],
+            "István-akna": ["Főpályaudvar felé"],
+            "István-akna I.": ["Budai Állomás felé", "István-akna felé"],
+            "István-akna II.": ["Budai Állomás felé", "István-akna felé"],
+            "István III. akna": ["István-akna felé", "Budai Állomás felé"],
+            "Palahegyi út": ["Újhegy felé", "Belváros felé"],
+            "Koksz utca": ["Belváros felé", "Újhegy felé"],
+            "Arasz utca": ["Újhegy felé", "Belváros felé"],
+            "ABC áruház": ["Belváros felé", "Újhegy felé"],
+            "Kozári utca": ["Újhegy felé", "Belváros felé"],
+            "Kakukk utca": ["Belváros felé", "Újhegy felé"],
+            "Újhegy": ["Belváros felé"],
+            "Kerékhegy": ["Belváros felé", "Hird felé"],
+            "Hirdi út": ["Belváros felé", "Szövőgyár utca felé"],
+            "Szövőgyár utca": ["Főpályaudvar, Hird, Harangláb utca és Krisztina tér felé"],
+            "Zengő utca": ["Hird, Harangláb utca felé", "Belváros felé"],
+            "Hadik András utca": ["Hird, Harangláb utca felé", "Belváros felé"],
+            "Hird, Harangláb utca": ["Főpályaudvar és Krisztina tér felé"],
+            "Rücker akna": ["Somogy felé", "István-akna felé"],
+            "Somogy kőbánya": ["István-akna felé", "Somogy felé"],
+            "Somogy": ["Hird, Harangláb utca, Főpályaudvar és Petőfi-akna felé"],
+            "Somogy utca": ["István-akna felé", "Belváros, Vasas felé"],
+            "Littke József utca": ["Kertváros felé", "Belváros felé"],
+            "Temető déli kapu": ["Kertváros felé", "Belváros felé"],
+            "Temető északi kapu": ["Kertváros felé", "Belváros felé"],
+            "Béke utca": ["Belváros felé", "Kertváros felé"],
+            "Eszék utca": ["Malomvölgyi út felé", "Belváros felé"],
+            "Derék-réti út": ["Belváros felé", "Malomvölgyi út felé"],
+            "Malomvölgyi út": ["Főpályaudvar és Hőtávvezeték felé"],
+            "Málom italbolt": ["Malomvölgyi út felé"],
+            "Málom tejcsarnok": ["Malomvölgyi út felé"],
+            "Árpádtetői elágazás": ["István-akna felé", "Budai Állomás felé"],
+            "Béta-aknai út": ["István-akna felé", "Budai Állomás felé"],
+            "Finn utca": ["Belváros és Kertváros felé"],
+            "Rákóczi út": ["Kertváros, Főpályaudvar felé", "48-as tér, Búza tér felé"],
+            "Téglagyár": ["Belváros felé", "Hőerőmű felé"],
+            "Strauss Metal": ["Belváros felé", "Hőerőmű felé"],
+            "Alexandra": ["Uránváros és Kertváros felé"],
+            "Francia utca": ["Uránváros és Kertváros felé"],
+            "Edison utca": ["Hőerőmű felé", "Belváros felé"],
+            "Hőerőmű": ["Belváros és Kertváros felé"],
+            "Szabadság utca": ["Uránváros felé", "Belváros felé"],
+            "Árkád, autóbusz állomás": ["Postavölgy, Mohácsi út felé", "Uránváros felé"],
+            "Autójavító": ["Belváros felé", "Budai Állomás felé"],
+            "Pécsbánya-rendező": ["Belváros felé", "Baromfifeldolgozó felé"],
+            "Baromfifeldolgozó": ["Belváros felé", "Kertváros felé", "Uránváros felé"],
+            "Árpádváros": ["Belváros felé", "Rovitex felé"],
+            "Enyezd utca": ["Uránváros felé"],
+            "Megyeri tér": ["Belváros felé"],
+            "Tüzér u., Nendtvich A. út": ["Belváros felé", "Uránváros felé"],
+            "Nendvitch A. út, Ybl M. u.": ["Mecsek Áruház felé", "Belváros felé"],
+            "Pázmány Péter utca": ["Ürög felé", "Belváros felé"],
+            "Híd": ["Belváros felé", "Ürög felé"],
+            "Ürög alsó": ["Belváros felé", "Deindol felé"],
+            "Fülemüle utca": ["Belváros felé", "Nagydeindol felé"],
+            "Égervölgy": ["Északi irány", "Belváros felé"],
+            "Ürög felső": ["Deindol felé", "Nagydeindol felé", "Belváros felé"],
+            "Istenkút": ["Belváros felé", "Nagydeindoli utca; Belváros felé", "Deindol felé"],
+            "Márialak": ["Nagydeindol felé", "Belváros felé"],
+            "Nagydeindol": ["Fagyöngy utca felé"],
+            "Deindol": ["Fagyöngy utca felé"],
+            "Hűvösvölgy": ["Belváros felé", "Deindol felé"],
+            "Kereszt": ["Belváros felé", "Deindol felé"],
+            "Abaligeti út": ["Belváros felé", "Mecsekszentkút felé"],
+            "Kismélyvölgy dűlő": ["Belváros felé", "Mecsekszentkút felé"],
+            "Mecsekszentkút": ["Fagyöngy utca felé"],
+            "Dózsa György utca": ["Belváros, II-es rakodó és Gesztenyés felé"],
+            "Engel János J. utca": ["Dózsa György utca felé", "Budai Állomás felé", "Gesztenyés felé", "Belváros felé"],
+            "Pósa Lajos utca": ["Belváros felé", "Engel János József utca felé"],
+            "Ledina": ["Belváros felé", "Pósa Lajos utca felé"],
+            "Bóbita Bábszínház": ["Buda Állomás és Gesztenyés felé", "Belváros felé"],
+            "Major utca": ["Ledina felé", "Belváros felé"],
+            "Búza tér": ["Belváros felé", "Ágoston tér és Ledina felé"],
+            "Gyümölcs utca": ["Uránváros felé", "Belváros felé"],
+            "Szigeti út, Szántó K. J. u.": ["Belváros felé", "Uránváros felé"],
+            "Bolgár köz": ["Belváros felé", "Patacs felé"],
+            "Rácváros": ["Belváros felé", "II-es rakodó, Benczúr Gyula utca felé"],
+            "Patacsi elágazás": ["Benczúr Gyula utca felé", "II-es rakodó felé"],
+            "Patacsi Kultúrház": ["Belváros felé", "Benczúr Gyula utca felé"],
+            "Kovács Béla utca": ["Benczúr Gyula utca felé", "Belváros felé"],
+            "Benczúr Gyula utca": ["II-es rakodó, Belváros és Gesztenyés felé"],
+            "Bázis út": ["Uránváros felé"],
+            "Nagy-Berki út": ["Uránváros felé"],
+            "Tettye Forrásház": ["Uránváros felé"],
+            "Softflow Kutatóközpont": ["II-es rakodó felé", "Belváros felé"],
+            "Kutató dűlő": ["II-es rakodó felé", "Belváros felé"],
+            "Pellérdi elágazás": ["II-es rakodó felé", "Belváros felé"],
+            "Cserkúti Csárda": ["II-es rakodó felé", "Belváros felé"],
+            "Cserkút tető": ["II-es rakodó felé", "Belváros felé"],
+            "II-es rakodó": ["Belváros felé"],
+            "Selmecz utca": ["Belváros felé", "Gesztenyés felé"],
+            "Malom": ["Belváros felé", "Gesztenyés felé"],
+            "Háromhíd": ["Gesztenyés felé", "Belváros felé"],
+            "Nagymeszes": ["Gesztenyés felé", "Belváros felé"],
+            "Bittner Alajos út": ["Gesztenyés felé", "Belváros felé"],
+            "Református Gimnázium": ["Gesztenyés felé", "Belváros felé"],
+            "Lámpásvölgy": ["Belváros, II-es rakodó felé"],
+            "Alsógyükés": ["Lámpásvölgy felé", "Belváros felé"],
+            "Feketehegy": ["Lámpásvölgy felé", "Belváros felé"],
+            "Borbálatelep": ["Belváros felé", "Lámpásvölgy felé"],
+            "Kató-lak": ["Belváros felé", "Borbálatelep felé"],
+            "Hársfa út": ["Lámpásvölgy felé", "Belváros felé"],
+            "Jánoskút": ["Belváros felé", "Borbálatelep felé"],
+            "Bártfa utca": ["Belváros felé", "Lámpásvölgy felé"],
+            "Hajnal utca": ["Belváros felé", "Lámpásvölgy felé"],
+            "Sándor utca": ["Belváros felé", "Gyükés, Borbálatelep felé"],
+            "Ágoston tér": ["Belváros felé", "Tettye felé"],
+            "András utca": ["Lámpásvölgy és Főpályaudvar felé"],
+            "Erzsébettelep": ["Gyükés felé", "Belváros felé"],
+            "Mészégető": ["Belváros felé", "Gyükés felé"],
+            "Szamárkút": ["Gyükés felé", "Belváros felé"],
+            "Gyükés": ["Főpályaudvar felé"],
+            "Körber Hungária": ["Kertváros felé", "Belváros felé"],
+            "Szilva utca": ["Belváros felé", "Kertváros felé"],
+            "Bimbó utca": ["Belváros felé", "Kertváros felé"],
+            "Barbakán": ["Belváros felé", "Dömörkapu felé"],
+            "Damjanich utca": ["Belváros felé", "MTA-székház felé"],
+            "Szőlőskert": ["Belváros felé", "MTA-székház felé"],
+            "Jurisics Miklós utca": ["Barbakán felé", "MTA-székház felé"],
+            "MTA-székház": ["Belváros felé", "Bálics, Pálosok felé"],
+            "Csillagvirág utca": ["MTA-székház felé", "Pálosok felé"],
+            "Kisszkókó dűlő": ["MTA-székház felé", "Pálosok felé"],
+            "Petőfi ház": ["MTA-székház felé", "Pálosok felé"],
+            "Surányi Miklós út": ["MTA-székház felé", "Pálosok felé"],
+            "Pálosok": ["MTA-székház felé", "Belváros felé", "Tettye felé", "Állatkert felé"],
+            "Gergely utca": ["Tettye, Havihegyi út felé"],
+            "Tettye tér": ["Tettye, Havihegyi út felé", "Belváros felé"],
+            "Tettye, Havhihegyi út": ["Főpályaudvar felé"],
+            "Alagút": ["Dömörkapu felé", "Főpályaudvar felé"],
+            "Tettye utca": ["Ágoston tér felé", "Alagút felé"],
+            "István utca": ["Alagút felé", "Ágoston tér felé"],
+            "Mecsek kapu": ["Állatkert felé"],
+            "Kőbánya": ["Állatkert felé", "Belváros felé"],
+            "Hotel Kikelet": ["Belváros felé", "Állatkert felé"],
+            "Állatkert": ["Dömörkapu felé", "Belváros felé"],
+            "Mandulás": ["Állatkert felé", "Szanatórium felé"],
+            "Báránytető": ["Belváros felé", "Szanatórium felé"],
+            "Szanatórium": ["Dömörkapu és Misinatető felé"],
+            "Dömörkapu": ["Főpályaudvar felé"],
+            "Misinatető": ["Főpályaudvar felé"],
+            "Krisztián": ["Bálics felé", "Belváros felé"],
+            "Bálics": ["Belváros felé", "Bálicstető felé"],
+            "Bálicstető": ["Főpályaudvar felé"],
+            "Gyermekkórház": ["Belváros felé", "Donátus felé"],
+            "Rodostó utca": ["Belváros felé", "Donátus felé"],
+            "Angster József utca": ["Bálics felé", "Barbakán felé", "Donátus felé", "Petőfi utca felé"],
+            "Donátusi út": ["Donátus felé", "Belváros felé"],
+            "Gólya dűlő": ["Belváros felé", "Donátus felé"],
+            "Lepke dűlő": ["Donátus felé", "Belváros felé"],
+            "Donátus": ["Főpályaudvar felé"],
+            "Hőtávvezeték": ["Rovitex felé", "Belváros felé"],
+            "Kálinger": ["Belváros felé", "Rovitex felé"],
+            "Trafóház": ["Belváros felé", "Rovitex felé"],
+            "Vegyesbolt": ["Rovitex felé", "Belváros felé"],
+            "Postavölgy alsó": ["Rovitex felé", "Belváros felé"],
+            "Postavölgy": ["Rovitex felé", "Belváros felé"],
+            "Postavölgy felső": ["Belváros felé", "Rovitex felé"],
+            "Rovitex": ["Főpályaudvar felé"],
+            "Interspar": ["Belváros felé", "Nagyárpád felé"],
+            "Temető keleti kapu": ["Nagyárpád felé", "Belváros felé"],
+            "Csárda": ["Belváros felé", "Nagyárpád felé"],
+            "Községhatár": ["Nagyárpád felé", "Belváros felé"],
+            "Kiss János utca": ["Nagyárpád felé", "Belváros felé"],
+            "Nagyárpád": ["Rovitex, Főpályaudvar és Fagyöngy utca felé"],
+            "Sörfőzde": ["Belváros felé"],
+            "Galilei utca": ["Fagyöngy utca felé"],
+            "Déri Miksa utca": ["Fagyöngy utca felé"],
+            "Időjós út": ["Fagyöngy utca felé"],
+        };
+
+        buszmegAllok = Object.fromEntries(Object.entries(buszmegAllok).sort((a, b) => a[0].localeCompare(b[0], 'hu')));
+
+        const buszmegAlloIndulasok = {
+            "Zsolnay-szobor": [{
+                "32; Főpályaudvar-Főpályaudvar": [["06:23", "06:43", "07:04", "07:24", "07:54", "08:24", "08:54", "09:24", "09:54", "10:24", "10:54", "11:24", "11:54", "12:24", "12:54", "13:14", "13:34", "13:54", "14:14", "14:34", "14:54", "15:14", "15:34", "15:54", "16:14", "16:34", "16:54", "17:23", "18:03", "18:33", "19:13", "20:13"], ["06:48", "07:33", "08:13", "08:53", "09:33", "10:13", "10:53", "11:33", "12:13", "12:53", "13:33", "14:13", "14:53", "15:33", "16:13", "16:53", "17:33", "18:13"], ["same weekend"]],
+                "32Y; Főpályaudvar-Főpályaudvar": [["04:33", "05:23"], ["04:33", "05:28"], ["same weekend"]],
+                "34; Főpályaudvar-Dömörkapu": [["04:37", "05:37", "06:07", "06:37", "07:07", "13:07", "13:37", "14:37", "15:07", "15:37", "16:07"], ["08:52", "10:52", "12:52", "14:52", "16:52",], ["same weekend"]],
+                "34Y; Főpályaudvar-Dömörkapu": [["07:40", "08:40", "09:10", "09:40", "10:40", "11:10", "11:40", "12:40", "16:40", "17:55", "18:55", "19:54", "20:54", "21:54", "22:54"], ["05:39", "06:39", "18:55", "19:54", "20:54", "21:54", "22:54",], ["same weekend"]],
+                "35; Főpályaudvar-Misinatető": [["14:07"], ["07:37:", "09:52", "11:52", "13:52", "15:52", "17:52",], ["same weekend"]],
+                "35Y; Főpályaudvar-Misinatető": [["08:10", "10:10", "12:10", "17:10"], [], []],
+                "36; Főpályaudvar-Bálicstető": [["06:42"], [], []],
+                "37; Főpályaudvar-Donátus": [["06:52", "07:47", "08:52", "09:52", "10:52", "11:52", "12:52", "13:52", "14:52", "15:52", "16:52", "17:22", "17:52", "18:32", "19:02", "19:52", "20:51", "21:51"], ["04:31", "05:46", "06:46", "11:52", "12:52", "13:52", "14:52", "15:52", "16:52", "17:52", "18:52", "19:52", "20:51", "21:51"], ["04:31", "05:46", "06:46", "07:52", "08:52", "09:52", "10:52", "11:52", "12:52", "13:52", "14:52", "15:52", "16:52", "17:52", "18:52", "19:52", "20:51", "21:52"]],
+                "46; Főpályaudvar-Főpályaudvar": [["04:17", "04:57", "05:37", "06:19", "07:12", "08:17", "09:22", "10:22", "11:22", "12:22", "13:22", "14:22", "15:22", "16:22"], ["07:49", "08:49", "09:49", "10:49",], []],
+                "47; Főpályaudvar-Donátus-Főpályaudvar": [["22:51"], ["same weekday"], ["same weekday"]]
+            }, {
+                "2, 2A, 102, 102Y; Uránváros felé": [["04:21", "04:46", "05:05", "05:08", "05:24", "05:31", "05:44", "05:55", "06:04", "06:16", "06:26", "06:37", "06:41", "06:48", "06:54", "07:01", "07:08", "07:15", "07:22", "07:31", "07:36", "07:45", "07:51", "07:52", "07:59", "08:09", "08:21", "08:31", "08:41", "08:51", "09:06", "09:21", "09:36", "09:51", "10:06", "10:21", "10:36", "10:51", "11:06", "11:21", "11:36", "11:51", "12:06", "12:21", "12:33", "12:43", "12:53", "13:03", "13:13", "13:23", "13:33", "13:43", "13:53", "14:03", "14:13", "14:23", "14:33", "14:43", "14:53", "15:03", "15:13", "15:23", "15:33", "15:43", "15:56", "16:06", "16:16", "16:26", "16:36", "16:43", "16:53", "17:03", "17:13", "17:23", "17:32", "17:43", "17:52", "18:03", "18:12", "18:21", "18:29", "18:39", "18:49", "18:59", "19:11", "19:31", "19:49", "20:09", "20:22", "20:42", "21:02", "21:22", "21:52", "22:24", "23:02", "23:17", "23:47", "00:17", "03:51"], ["04:21", "04:46", "05:08", "05:22", "06:02", "06:42", "07:19", "07:49", "08:09", "08:31", "08:51", "09:11", "09:31", "09:51", "10:11", "10:31", "10:51", "11:11", "11:31", "11:51", "12:11", "12:31", "12:51", "13:11", "13:31", "13:51", "14:11", "14:31", "14:51", "15:11", "15:31", "15:51", "16:11", "16:31", "16:51", "17:11", "17:31", "17:51", "18:11", "18:31", "18:51", "19:11", "19:29", "19:49", "20:09", "20:22", "20:42", "21:02", "21:22", "21:51", "22:24", "23:04", "23:17", "23:47", "00:17", "02:17", "03:51"], ["same weekend"]],
+                "103, 30, 30Y; Klinikák felé": [["04:35", "04:55", "05:09", "05:22", "05:35", "05:49", "05:5", "06:10", "06:19", "06:29", "06:39", "06:51", "06:59", "07:08", "07:19", "07:30", "07:40", "07:56", "08:09", "08:20", "08:36", "08:56", "09:06", "09:20", "09:28", "09:36", "09:56", "10:06", "10:20", "10:36", "10:56", "11:06", "11:20", "11:36", "11:56", "12:06", "12:20", "12:36", "12:52", "13:00", "13:11", "13:20", "13:32", "13:40", "13:51", "14:00", "14:12", "14:20", "14:31", "14:40", "14:52", "15:00", "15:11", "15:20", "15:32", "15:40", "15:51", "16:00", "16:12", "16:20", "16:31", "16:40", "16:53", "17:00", "17:12", "17:19", "17:33", "17:39", "17:52", "17:59", "18:13", "18:24", "18:36", "18:56", "19:15", "19:34", "19:55", "20:15", "20:34", "20:55", "21:15", "21:35", "21:55", "22:15", "22:36", "22:55"], ["04:55", "05:15", "05:35", "05:55", "06:15", "06:35", "06:55", "07:00", "07:22", "07:30", "07:52", "08:00", "08:22", "08:31", "08:52", "09:01", "09:22", "09:31", "09:52", "10:01", "10:22", "10:31", "10:52", "11:01", "11:22", "11:31", "11:52", "12:01", "12:22", "12:31", "12:49", "13:01", "13:20", "13:31", "13:49", "14:20", "14:49", "15:20", "15:49", "16:20", "16:49", "17:15", "17:34", "17:55", "18:15", "18:34", "18:55", "19:15", "19:35", "19:55", "20:15", "20:35", "20:55", "21:15", "21:35", "21:55", "22:15", "22:38", "22:55"], ["04:55", "05:15", "05:35", "05:55", "06:15", "06:35", "06:55", "07:00", "07:19", "07:30", "07:52", "08:00", "08:22", "08:31", "08:52", "09:01", "09:22", "09:31", "09:52", "10:01", "10:22", "10:31", "10:52", "11:01", "11:22", "11:31", "11:52", "12:01", "12:22", "12:31", "12:49", "13:01", "13:20", "13:31", "13:49", "14:20", "14:49", "15:20", "15:49", "16:20", "16:49", "17:15", "17:34", "17:55", "18:15", "18:34", "18:55", "19:15", "19:35", "19:55", "20:15", "20:35", "20:55", "21:15", "21:35", "21:55", "22:15", "22:38", "22:55"]],
+                "4Y, 109E; Klinikák felé (Petőfi utca érintésével)": [["07:05", "07:27", "07:32", "07:47"], [], []],
+                "27; Gesztenyés-Benczúr Gyula utca": [["06:17", "06:59", "07:39", "08:41", "09:31", "10:31", "11:31", "12:31", "13:31", "14:31", "15:31", "16:31", "17:31", "18:31"], ["06:43", "07:31", "08:31", "09:31", "10:31", "11:31", "12:31", "13:31", "14:31", "15:31", "16:31", "17:31", "18:31", "19:31"], ["same weekend"]],
+                "26, 27Y, 28; II-es rakodó felé": [["04:14", "04:44", "05:04", "05:18", "05:43", "06:03", "06:29", "06:49", "07:09", "07:29", "07:54", "08:21", "09:00", "10:00", "11:00", "12:00", "12:46", "13:16", "13:46", "14:16", "14:46", "15:16", "15:46", "16:16", "16:46", "17:16", "17:46", "18:16", "18:46", "19:33", "20:00", "20:30", "21:00", "21:30", "22:00", "22:53"], ["04:14", "05:14", "06:02", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:30", "21:30", "22:53"], ["same weekend"]],
+                "27, 28A, 28Y; Uránvárosig": [["06:38", "07:19", "07:19", "08:04", "13:01", "14:01", "15:01", "16:01", "17:01", "18:01", "19:01"], [], []],
+                "932; Főpályaudvar-Főpályaudvar": [["00:19", "03:19"], ["same weekday"], ["same weekday"]]
+            }, [{
+                // szabadság utca főpályaudvar felé
+                "22; Fagyöngy utca / Kertváros-Nagydeindol": [],
+                "24; Fagyöngy utca-Mecsekszentkút": [],
+                "23; Fagyöngy utca-Deindol": [],
+                "23Y; Fagyöngy utca-Deindol": [],
+                "30Y; Klinikák-Kertváros": [],
+                "30, 32, 32Y, 34, 34Y, 35Y, 46; Főpályaudvar felé Vásárcsarnok érintésével": [],
+                "3E, 7, 7Y, 14, 14Y, 34, 35, 36, 37, 38, 38Y, 39, 40, 140, 47, 73, 932, 940, 973; Főpályaudvar felé": [],
+            }], [{
+                // rákóczi út buda állomás és kertváros
+                "2; Uránváros-Mecsekszabolcs": [],
+                "2A; Uránváros-Hősök tere": [],
+                "2A; Uránváros-Fehérhegy": [],
+                "102; Uránváros-Petőfi-akna": [],
+                "102Y; Uránváros-Petőfi-akna (Somogy betérés)": [],
+                "3; Kertváros-Árkád-Kertváros": [],
+                "103; Klinikák-Kertváros": [],
+                "6; Ipar utca-Kertváros": [],
+                "8; Ipar utca-Fagyöngy utca": [],
+                "14; Főpályaudvar-Petőfi-akna": [],
+                "14Y; Főpályaudvar-Petőfi-akna (Somogy betérés)": [],
+                "22; Nagydeindol-Fagyöngy utca": [],
+                "23; Deindol-Fagyöngy utca": [],
+                "23Y; Deindol-Fagyöngy utca": [],
+                "24; Mecsekszentkút-Fagyöngy utca": [],
+                "25; Benczúr Gyula utca-Budai Állomás": [],
+                "26; II-es rakodó-Budai Állomás": [],
+                "27; Benczúr Gyula utca-Gesztenyés": [],
+                "27Y; II-es rakodó-Gesztenyés": [],
+                "40; Főpályaudvar-Gesztenyés": [],
+                "940; Főpályaudvar-Főpályaudvar": [],
+                "28; II-es rakodó-Lámpásvölgy": [],
+                "28Y; Uránváros-Lámpásvölgy": [],
+                "38; Főpályaudvar-Lámpásvölgy": [],
+                "38Y; Főpályaudvar-Lámpásvölgy (András utca betérés)": [],
+                "140; Főpályaudvar-Gesztenyés": [],
+                "29; II-es rakodó-Gyükés": [],
+                "39; Főpályaudvar-Gyükés": [],
+                "7; Főpályaudvar-Malomvölgyi út": [],
+                "7Y; Főpályaudvar-Malomvölgyi út (Málom betérés)": [],
+                "73; Főpályaudvar-Malomvölgyi út": [],
+                "73Y; Főpályaudvar-Malomvölgyi út (Málom betérés)": [],
+                "973; Főpályaudvar-Malomvölgyi út": [],
+            }]]
+        };
+
+        function isNationalHoliday(currentDate) {
+            let monthDayDate = currentDate.getMonth() + "" + currentDate.getDate();
+            const holidays = ["01", "215", "229", "231", "31", "41", "419", "420", "720", "923", "101", "1124", "1125", "1126", "1131"];
+
+            for (let e of holidays) {
+                if (monthDayDate === e) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function checkDayType(today) {
+            switch (today) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    return "weekday";
+                    break;
+                case 0:
+                case 6:
+                    return "weekend";
+                    break;
+                default:
+                    return "none";
+            }
+        }
+
+        let buszmegAlloKivalasztva = false;
+        let buszmegReszHozzaadva;
+        let registrationLink = document.querySelector("header nav a:nth-child(5)");
+        let buszmegInput = document.querySelector("#main-search-bus-stop");
+        let buszmegPhone = document.querySelector("#main-bus-stop-phone");
+        let phoneFocused = false;
+
+        function createBuszmegAllok() {
+            let buszmegValasztasok = document.querySelector("#main-bus-stop-choices");
+            for (let key in buszmegAllok) {
+                let buszmegalloDiv = document.createElement("div");
+                buszmegalloDiv.classList.add("choice");
+                buszmegalloDiv.textContent = key;
+                buszmegValasztasok.appendChild(buszmegalloDiv);
+            }
+        }
+
+        function changeSizeMainBgImages(width = 1002, height = 398) {
+            let mainBgImages = document.querySelectorAll("#main-bg-div img");
+            mainBgImages.forEach(img => {
+                img.style.width = `${width}px`;
+                img.style.height = `${height}px`;
+            })
+        }
+
+        function mainBackBtnClickFunction() {
+            buszmegPhone.style.height = "570px";
+            buszmegPhone.style.width = "350px";
+            changeSizeMainBgImages();
+            document.querySelector("main").style.height = "70%";
+            let buszmegChoices = document.querySelectorAll("#main-bus-stop-choices .choice");
+            let tableWrapperDiv = document.querySelector("#tableDiv");
+            if (tableWrapperDiv) {
+                tableWrapperDiv.style.opacity = "0";
+                tableWrapperDiv.remove();
+            }
+            buszmegReszHozzaadva = false;
+            let mainBusStopBackBtn = document.querySelector("#main-bus-stop-back-button");
+            if (buszmegAlloKivalasztva) {
+                buszmegAlloKivalasztva = false;
+                Array.from(buszmegPhone.children).forEach(child => child.style.opacity = "0");
+                setTimeout(() => {
+                    buszmegPhone.innerHTML = `
+                <h2>Válaszd ki a buszmegállót!</h2>
+                <input type="text" id="main-search-bus-stop" placeholder="Keress buszmegállót...">
+                <div id="main-bus-stop-choices"></div>
+                <button id="main-bus-stop-back-button">Vissza</button>`;
+                    createBuszmegAllok();
+                    addBuszmegFunctionality();
+                    mainBusStopBackBtn.removeEventListener("click", mainBackBtnClickFunction);
+                    addMainBackBtnFunctionality();
+                    addBusStopSearchFunctionality();
+                    mainBackBtnPressEsc();
+                    Array.from(buszmegPhone.children).forEach(child => child.style.opacity = "0");
+                }, 300);
+                setTimeout(() => {
+                    Array.from(buszmegPhone.children).forEach(child => child.style.opacity = "1");
+                }, 500);
+            }
+        }
+
+        function mainBackBtnPressEsc() {
+            if (phoneFocused) {
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape") {
+                        mainBackBtnClickFunction();
+                    }
+                });
+            }
+        }
+
+        function addMainBackBtnFunctionality() {
+            let mainBusStopBackBtn = document.querySelector("#main-bus-stop-back-button");
+            mainBusStopBackBtn.addEventListener("click", mainBackBtnClickFunction);
+        }
+
+        function textTypingEffect(element, text) {
+            let i = 0;
+            const typingInterval = setInterval(() => {
+                element.textContent = text.substring(0, i + 1);
+                i++;
+                if (i === text.length) {
+                    clearInterval(typingInterval);
+                    setTimeout(() => {
+                        deleteTextTypingEffect(element, text);
+                    }, 2000);
+                }
+            }, 70);
+        }
+
+        function deleteTextTypingEffect(element, text) {
+            let i = text.length;
+            const deletingInterval = setInterval(() => {
+                element.textContent = text.substring(0, i);
+                i--;
+                if (i < 0) {
+                    clearInterval(deletingInterval);
+                    setTimeout(() => {
+                        if (text === "Bejelentkezés") {
+                            textTypingEffect(element, "Regisztráció");
+                        } else {
+                            textTypingEffect(element, "Bejelentkezés");
+                        }
+                    }, 500);
+                }
+            }, 70);
+        }
+
+        textTypingEffect(registrationLink, "Bejelentkezés");
+        createBuszmegAllok();
+        addBuszmegFunctionality();
+        addMainBackBtnFunctionality();
+
+        function createBuszmegReszek(kivalasztottBuszmegResz, appendDiv) {
+            let mainBusStopBackBtn = document.querySelector("#main-bus-stop-back-button");
+            let buszmegPhone = document.querySelector("#main-bus-stop-phone");
+            let casesObj = { 1: 150, 2: 175, 3: 210, 4: 240, 5: 265, 6: 310, 7: 345 };
+            let bottomAmount;
+            buszmegPhone.style.height = `${400 + kivalasztottBuszmegResz.length * 33}px`
+            for (let key in casesObj) {
+                if (parseInt(key) === kivalasztottBuszmegResz.length) {
+                    bottomAmount = casesObj[key];
+                    break;
+                }
+            }
+            mainBusStopBackBtn.style.bottom = `${buszmegPhone.clientHeight - bottomAmount}px`;
+            mainBusStopBackBtn.style.right = `${buszmegPhone.clientWidth + 375}px`;
+
+            if (kivalasztottBuszmegResz.length > 1 && buszmegReszHozzaadva) {
+                for (let i = 0; i < kivalasztottBuszmegResz.length; i++) {
+                    let newBuszmegResz = document.createElement("div");
+                    newBuszmegResz.textContent = kivalasztottBuszmegResz[i];
+                    newBuszmegResz.classList.add("buszmegallo-resz-choice");
+                    appendDiv.appendChild(newBuszmegResz);
+                    if (i === kivalasztottBuszmegResz.length - 1) {
+                        buszmegReszHozzaadva = false;
+                    }
+                }
+            }
+            else {
+                if (buszmegReszHozzaadva) {
+                    buszmegReszHozzaadva = false;
+                    let newBuszmegResz = document.createElement("div");
+                    newBuszmegResz.textContent = kivalasztottBuszmegResz[0];
+                    newBuszmegResz.classList.add("buszmegallo-resz-choice");
+                    appendDiv.appendChild(newBuszmegResz);
+                }
+            }
+            if (kivalasztottBuszmegResz.length > 6) {
+                setTimeout(() => {
+                    let selectedChoice = document.querySelector(".selected-choice");
+                    selectedChoice.style.transform = "translateY(135%)";
+                    selectedChoice.style.marginBottom = "10%";
+                }, 200);
+                setTimeout(() => {
+                    buszmegReszekDiv.style.transform = "translateY(15%)";
+                    buszmegPhone.style.transform = "translateY(-1%)";
+                }, 300);
+            }
+        }
+
+        function onHoverEffect(element, elements) {
+            element.addEventListener("mouseenter", function (e) {
+                let selectedElement = e.target;
+                selectedElement.style.backgroundColor = "green";
+                elements.forEach(element => {
+                    if (element !== selectedElement) {
+                        element.style.backgroundColor = "transparent";
+                    }
+                })
+            })
+            element.addEventListener("mouseleave", function (e) {
+                let selectedElement = e.target;
+                selectedElement.style.backgroundColor = "transparent";
+            })
+        }
+
+        function changeH2Text(text, delay) {
+            let h2 = document.querySelector("#main-bus-stop-phone h2");
+            h2.style.opacity = "0";
+            setTimeout(() => {
+                h2.innerText = text;
+                h2.style.opacity = "1";
+            }, delay);
+        }
+
+        function addBuszmegFunctionality() {
+            buszmegPhone = document.querySelector("#main-bus-stop-phone");
+            let buszmegChoices = document.querySelectorAll("#main-bus-stop-choices .choice");
+            buszmegValasztasok = document.querySelector("#main-bus-stop-choices");
+            buszmegChoices.forEach(buszmeg => {
+                onHoverEffect(buszmeg, buszmegChoices);
+                buszmeg.addEventListener("click", function (e) {
+                    phoneFocused = true;
+                    mainBackBtnPressEsc();
+                    buszmegReszHozzaadva = true;
+                    let buszmegInput = document.querySelector("#main-search-bus-stop");
+                    buszmegInput.style.opacity = "0";
+                    setTimeout(() => {
+                        buszmegInput.remove();
+                    }, 300);
+                    let selectedElement = e.target;
+                    selectedElement.style.backgroundColor = "green";
+                    buszmegChoices.forEach(choice => {
+                        if (choice !== selectedElement) {
+                            choice.style.opacity = "0";
+                            choice.style.transform = "translateY(-100%)";
+                        }
+                    });
+                    buszmegValasztasok.style.height = "0px";
+                    buszmegAlloKivalasztva = true;
+                    let selectedBuszmegDiv = document.createElement("div");
+                    selectedBuszmegDiv.classList.add("selected-choice");
+                    selectedBuszmegDiv.style.backgroundColor = "green";
+                    selectedBuszmegDiv.textContent = selectedElement.textContent;
+                    selectedBuszmegDiv.style.transform = "translateY(50%)";
+                    selectedBuszmegDiv.style.opacity = "0";
+                    selectedBuszmegDiv.style.transition = "all 0.3s"
+                    setTimeout(() => {
+                        buszmegPhone.appendChild(selectedBuszmegDiv);
+                        selectedBuszmegDiv.style.transform = "translateY(150%)";
+                        selectedBuszmegDiv.style.position = "fixed"
+                        buszmegValasztasok.remove();
+                    }, 100);
+                    setTimeout(() => {
+                        selectedBuszmegDiv.style.opacity = "1";
+                        let buszmegReszekDiv = document.createElement("div");
+                        buszmegReszekDiv.setAttribute("id", "buszmegallo-reszek-div");
+                        createBuszmegReszek(buszmegAllok[selectedBuszmegDiv.textContent], buszmegReszekDiv);
+                        buszmegPhone.appendChild(buszmegReszekDiv);
+                        setTimeout(() => {
+                            buszmegReszekDiv.style.opacity = "1";
+                        }, 300);
+                        let buszmegReszekChoices = document.querySelectorAll(".buszmegallo-resz-choice");
+                        buszmegReszekChoices.forEach(resz => {
+                            onHoverEffect(resz, buszmegReszekChoices);
+                            resz.addEventListener("click", function (event) {
+                                let table = document.createElement("table");
+                                changeH2Text("Indulások innen:", 400);
+                                table.id = "arrivalsTable";
+                                let foundQualifyingTimes = false;
+                                table.innerHTML = ``;
+                                let tableWrapperDiv = document.createElement("div");
+                                tableWrapperDiv.id = "tableDiv";
+                                tableWrapperDiv.appendChild(table);
+                                currentDate = new Date();
+                                currentDay = currentDate.getDay();
+                                let buszmegIndex = Array.from(buszmegReszekChoices).indexOf(event.target);
+                                let kivalasztottBuszmeg = buszmegAlloIndulasok[e.target.textContent][buszmegIndex];
+                                let correctIndexByDate = 0;
+                                if (isNationalHoliday(currentDate)) {
+                                    correctIndexByDate = 2;
+                                } else if (checkDayType(currentDay) === "weekday") {
+                                    correctIndexByDate = 0;
+                                } else {
+                                    correctIndexByDate = 1;
+                                }
+                                for (let key in kivalasztottBuszmeg) {
+                                    for (let element of kivalasztottBuszmeg[key][correctIndexByDate]) {
+                                        if (element === "same weekend") {
+                                            correctIndexByDate = 1;
+                                        }
+                                        else if (element === "same weekday") {
+                                            correctIndexByDate = 0;
+                                        }
+                                    }
+                                    let arrivalTimes = kivalasztottBuszmeg[key][correctIndexByDate];
+                                    let qualifyingArrivalTimes = [];
+                                    for (let time of arrivalTimes) {
+                                        let [arrivalHrs, arrivalMins] = time.split(":").map(Number);
+                                        let arrivalTimeInMinutes = arrivalHrs * 60 + arrivalMins;
+                                        const currentTimeInMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+                                        if (arrivalTimeInMinutes < currentTimeInMinutes) {
+                                            arrivalTimeInMinutes += 24 * 60;
+                                        }
+                                        const timeLeftUntilArrival = arrivalTimeInMinutes - currentTimeInMinutes;
+                                        if (timeLeftUntilArrival > 0 && timeLeftUntilArrival <= 90) {
+                                            qualifyingArrivalTimes.push(`${time} (${timeLeftUntilArrival} perc)`);
+                                        }
+                                    }
+                                    if (qualifyingArrivalTimes.length > 0) {
+                                        let jaratRow = table.insertRow();
+                                        let jaratSzamTh = document.createElement("th");
+                                        let keyArray = key.split(";").map(str => str.trim());
+                                        jaratSzamTh.innerText = keyArray[0];
+                                        jaratRow.appendChild(jaratSzamTh);
+                                        let iranyTdFirst = jaratRow.insertCell();
+                                        iranyTdFirst.innerText = keyArray[1];
+                                        let iranyTdTwo = jaratRow.insertCell();
+                                        iranyTdTwo.innerText = qualifyingArrivalTimes.join("\n");
+                                        foundQualifyingTimes = true;
+                                    }
+                                    else {
+                                        continue;
+                                    }
+                                }
+                                if (!foundQualifyingTimes) {
+                                    let emptyRow = table.insertRow();
+                                    let emptyCell = emptyRow.insertCell();
+                                    emptyCell.colSpan = 3;
+                                    emptyCell.innerText = "Nem indulnak buszok 90 percen belül ebből a megállóból";
+                                }
+                                buszmegPhone.appendChild(tableWrapperDiv);
+                                let mainBusStopBackBtn = document.querySelector("#main-bus-stop-back-button");
+                                mainBusStopBackBtn.style.opacity = "0";
+                                mainBusStopBackBtn.style.bottom = "82%";
+                                mainBusStopBackBtn.style.right = "38%";
+                                setTimeout(() => {
+                                    mainBusStopBackBtn.style.opacity = "1";
+                                }, 700);
+                                setTimeout(() => {
+                                    buszmegPhone.style.placeItems = "start center";
+                                }, 600)
+                                setTimeout(() => {
+                                    buszmegPhone.style.width = "800px";
+                                    buszmegPhone.style.height = "650px";
+                                    document.querySelector("main").style.height = "75%";
+                                    changeSizeMainBgImages(1002, 425);
+                                    setTimeout(() => {
+                                        tableWrapperDiv.style.opacity = "1";
+                                    }, 400);
+                                }, 400);
+                                let selectedBuszmegResz = event.target;
+                                document.querySelectorAll(".buszmegallo-resz-choice").forEach(choice => {
+                                    if (choice !== selectedBuszmegResz) {
+                                        choice.style.opacity = "0";
+                                        choice.style.transform = "translateY(-100%)";
+                                        selectedBuszmegResz.style.opacity = "0";
+                                    }
+                                });
+                                setTimeout(() => {
+                                    buszmegReszekDiv.remove();
+                                }, 300);
+                                setTimeout(() => {
+                                    buszmegReszekDiv.style.height = "0px";
+                                    let selectedBuszmegReszDiv = document.createElement("div");
+                                    selectedBuszmegReszDiv.textContent = selectedBuszmegResz.textContent;
+                                    selectedBuszmegReszDiv.classList.add("selected-choice");
+                                    selectedBuszmegReszDiv.style.opacity = "0";
+                                    selectedBuszmegReszDiv.style.backgroundColor = "green";
+                                    buszmegPhone.appendChild(selectedBuszmegReszDiv);
+                                    setTimeout(() => {
+                                        selectedBuszmegReszDiv.style.opacity = "1";
+                                        selectedBuszmegReszDiv.style.position = "fixed";
+                                        selectedBuszmegReszDiv.style.transform = "translateY(280%)";
+                                    }, 300);
+                                }, 400);
+                            });
+                        });
+                    }, 600);
+                });
+            });
+        }
+
+        function imageSlideAnimation() {
+            const mainBgImages = document.querySelectorAll("#main-bg-div img");
+            const totalImages = mainBgImages.length;
+            const animationDuration = 5000;
+
+            function animateImage(index) {
+                const img = mainBgImages[index];
+                setTimeout(() => {
+                    img.style.opacity = "0";
+                    img.style.transform = "translateY(110%)";
+                }, index * animationDuration);
+
+                setTimeout(() => {
+                    img.style.opacity = "1";
+                }, index * animationDuration + 1500);
+
+                setTimeout(() => {
+                    img.style.zIndex = "1";
+                    img.style.transform = "translateY(0)";
+                }, index * animationDuration + 2000);
+            }
+
+            for (let i = 0; i < totalImages; i++) {
+                animateImage(i);
+            }
+
+            setInterval(() => {
+                mainBgImages.forEach((img, index) => {
+                    img.style.opacity = "0";
+                    img.style.zIndex = "0";
+                    setTimeout(() => {
+                        img.style.opacity = "1";
+                        img.style.zIndex = "1";
+                    }, index * animationDuration + 1500);
+                });
+            }, totalImages * animationDuration + 2000);
+        }
+
+        imageSlideAnimation();
+
+        function addBusStopSearchFunctionality() {
+            let buszmegInput = document.querySelector("#main-search-bus-stop");
+            let outputDiv = buszmegPhone.querySelector("#main-bus-stop-choices");
+            buszmegInput.addEventListener("input", function () {
+                outputDiv.innerHTML = ``;
+                for (let key in buszmegAllok) {
+                    if (key.toLowerCase().includes(buszmegInput.value.toLowerCase())) {
+                        let searchedElement = document.createElement("div");
+                        searchedElement.classList.add("choice");
+                        searchedElement.textContent = key;
+                        outputDiv.appendChild(searchedElement);
+                        addBuszmegFunctionality();
+                    }
+                }
+            })
+        }
+
+        addBusStopSearchFunctionality();
+
+        function navAHoverFunctionality() {
+            let linkContents = [["Menetrend", "Térképek", "Aktuális hírek", "Utazási feltételek", "Igényvezérelt közlekedés", "Üzletszabályzat"],
+            ["Jegy- és bérletinformáció", "Bérletpénztárak, értékesítési pontok"], ["Ügyfélszolgálat", "Elérhetőségek", "Társadalmi egyeztetés"]];
+            let navigationLinks = document.querySelectorAll("header nav a:nth-child(-n+3)");
+            navigationLinks.forEach((navlink, index) => {
+                navlink.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    let moreOptionsDiv = document.querySelector(".moreOptionsDiv");
+                    if (moreOptionsDiv) {
+                        moreOptionsDiv.style.opacity = "0";
+                        setTimeout(() => {
+                            moreOptionsDiv.remove();
+                        }, 300);
+                    }
+                    else {
+                        let x = this.offsetLeft - 50;
+                        let y = this.offsetTop - 700;
+                        moreOptionsDiv = document.createElement("div");
+                        moreOptionsDiv.style.transform = `translate(${x}px, ${y}px)`;
+                        moreOptionsDiv.classList.add("moreOptionsDiv");
+                        for (let i = 0; i < linkContents[index].length; i++) {
+                            moreOptionsDiv.innerHTML += `<a href="#"> ${linkContents[index][i]}</a>`;
+                        }
+                        document.body.appendChild(moreOptionsDiv);
+                        setTimeout(() => {
+                            moreOptionsDiv.style.opacity = "1";
+                        }, 10);
+                    }
+                });
+            });
+        }
+
+        navAHoverFunctionality();
+    </script>
+</body>
+
+</html>
